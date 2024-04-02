@@ -19,8 +19,8 @@ namespace DAL.Annotation
         {
             this.ModelBuilder.HasKey(u => u.EventRecipeId);
             this.ModelBuilder.Property(u => u.EventRecipeId).ValueGeneratedOnAdd().UseIdentityColumn().HasColumnName("event_recipe_id");
-            this.ModelBuilder.HasOne(u => u.Event).WithMany(u => u.EventRecipes).HasForeignKey(u => u.EventId);
-            this.ModelBuilder.HasOne(u => u.Recipe).WithMany(u => u.RecipeEvents).HasForeignKey(u => u.RecipeId);
+            this.ModelBuilder.HasOne(u => u.Event).WithMany(u => u.EventRecipes).HasForeignKey(u => u.EventId).IsRequired(false);
+            this.ModelBuilder.HasOne(u => u.Recipe).WithMany(u => u.RecipeEvents).HasForeignKey(u => u.RecipeId).IsRequired(false);
         }
     }
 }

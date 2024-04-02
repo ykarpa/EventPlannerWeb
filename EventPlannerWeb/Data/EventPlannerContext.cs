@@ -12,12 +12,12 @@ namespace EventPlannerWeb.Data
 
     public class EventPlannerContext : DbContext
     {
-        private readonly IConfiguration? _configuration;
+        //private readonly IConfiguration? _configuration;
 
-        public EventPlannerContext(IConfiguration configuration)
-        {
-            _configuration = configuration;
-        }
+        //public EventPlannerContext(IConfiguration configuration)
+        //{
+        //    _configuration = configuration;
+        //}
 
         public EventPlannerContext(DbContextOptions<EventPlannerContext> options)
             : base(options)
@@ -25,13 +25,13 @@ namespace EventPlannerWeb.Data
             //this.Database.Migrate();
         }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
-            {
-                optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Username=postgres;Password=vitalik;Database=EventPlannerWeb");
-            }
-        }
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //{
+        //    if (!optionsBuilder.IsConfigured)
+        //    {
+        //        optionsBuilder.UseNpgsql(_configuration.GetConnectionString("EventPlannerDBCon"));
+        //    }
+        //}
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
