@@ -2,6 +2,8 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
+using System.Text.Json.Serialization;
+
 namespace EventPlannerWeb.Models
 {
     public class Ingredient
@@ -12,6 +14,7 @@ namespace EventPlannerWeb.Models
 
         public decimal Price { get; set; }
 
-        public ICollection<IngredientRecipe> RecipesIngerdient { get; set; }
+        [JsonIgnore]
+        public ICollection<IngredientRecipe>? RecipesIngerdient { get; set; }
     }
 }

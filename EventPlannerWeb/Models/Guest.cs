@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
+    using System.Text.Json.Serialization;
     using System.Threading.Tasks;
 
     public class Guest
@@ -12,11 +13,13 @@
 
         public string Surname { get; set; }
 
-        public User User { get; set; }
+        [JsonIgnore]
+        public User? User { get; set; }
 
         public int UserId { get; set; }
 
-        public ICollection<EventGuest> GuestEvents { get; set; }
+        [JsonIgnore]
+        public ICollection<EventGuest>? GuestEvents { get; set; }
 
         public string? Name { get; set; }
 

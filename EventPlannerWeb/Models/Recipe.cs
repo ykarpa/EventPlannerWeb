@@ -2,6 +2,8 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
+using System.Text.Json.Serialization;
+
 namespace EventPlannerWeb.Models
 {
     public class Recipe
@@ -16,9 +18,11 @@ namespace EventPlannerWeb.Models
 
         public string Description { get; set; }
 
-        public ICollection<IngredientRecipe> IngredientsRecipe { get; set; }
+        [JsonIgnore]
+        public ICollection<IngredientRecipe>? IngredientsRecipe { get; set; }
 
-        public ICollection<EventRecipe> RecipeEvents { get; set; }
+        [JsonIgnore]
+        public ICollection<EventRecipe>? RecipeEvents { get; set; }
 
         public DateTime CreatedDate { get; set; }
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace EventPlannerWeb.Models
@@ -20,9 +21,11 @@ namespace EventPlannerWeb.Models
 
         public string Password { get; set; }
 
+        [JsonIgnore]
         public virtual ICollection<Event>? Events { get; set; }
 
-        public virtual ICollection<Guest> Guests { get; set; }
+        [JsonIgnore]
+        public virtual ICollection<Guest?> Guests { get; set; }
 
         public Gender Gender { get; set; }
 
