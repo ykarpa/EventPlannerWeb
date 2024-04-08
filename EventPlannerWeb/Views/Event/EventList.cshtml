@@ -1,0 +1,157 @@
+﻿@model List<EventPlannerWeb.Models.Event> 
+
+@{
+    ViewData["Title"] = "Event List";
+}
+
+<html>
+<head>
+    <title>@ViewData["Title"]</title>
+</head>
+<body>
+    <style>
+        .event-list-page {
+            margin-top: 150px;
+            margin-left: 300px;
+        }
+
+        .event-list-header-part {
+            display:flex;
+            flex-direction:row;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .event-list-header {
+            font-size: 30px;
+            margin-bottom: 20px;
+        }
+
+        /* Recipe search input field */
+        .event-search {
+            width: 300px; /* Adjust width as needed */
+            height: 40px;
+            padding: 8px 12px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-right: 10px; /* Adjust spacing */
+        }
+
+        /* Search button */
+        .button-search {
+            height: 40px;
+            padding: 0 20px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #007bff; /* Adjust color */
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease; /* Smooth transition */
+        }
+
+        .button-search:hover {
+            background-color: #0056b3; /* Darker color on hover */
+        }
+
+        .add-event {
+            width: 120px;
+            height: 55px;
+            background-color: white;
+            font-size: 20px;
+            color: #8B92D0;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-right: 320px;
+        }
+
+        .event-list-element {
+            width: 900px;
+            height: 50px;
+            background-color: gainsboro;
+            display: flex;
+            justify-content: space-between;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        .event-name {
+            cursor: pointer;
+            padding-left: 20px;
+            padding-top: 15px;
+            font-size: 20px;
+        }
+
+        .event-info {
+            display: flex;
+            flex-direction: row;
+            margin-right: 100px;
+        }
+
+        .event-info-text {
+            cursor: pointer;
+            padding-left: 20px;
+            padding-top: 15px;
+            font-size: 20px;
+        }
+
+        .event-date {
+            margin-right: 20px;
+            cursor: pointer;
+            padding-left: 20px;
+            padding-top: 15px;
+            font-size: 20px;
+        }
+    </style>
+    <div class="event-list-page">
+    <div class="event-list-header">Список подій</div>
+    <div class="event-list-header-part">
+        <div class="search-part">
+            <input type="text" id="event-search-input" class="event-search" placeholder="Пошук за назвою події">
+            <button class="button-search" onclick="filterAndSortRecipes()">Пошук</button>
+        </div>
+        <button class="add-event">Додати подію</button>
+    </div>
+    <div class="event-list" id="event-list-container">
+        @foreach (var event_ in Model)
+        {
+<div class="event-list-element" data-id="@event_.EventId" onclick="openEventDetails(this)">
+            <div class="event-info">
+            <div class="event-name">@event_.Name</div>
+            <div class="event-info-text"> @event_.Price грн</div>
+            </div>
+            <div class="event-date"> @event_.CreatedDate</div>
+
+        </div> 
+        }
+    </div>
+</div>
+</body>
+</html>
+
+<script>
+    function filterAndSortRecipes() {
+        var searchQuery = document.getElementById('event-search-input').value.toLowerCase();
+        var recipeListContainer = document.getElementById('event-list-container');
+        var recipeListItems = recipeListContainer.getElementsByClassName('event-list-element');
+
+        Array.from(recipeListItems).forEach(function(item) {
+            var recipeName = item.getElementsByClassName('event-name')[0].innerText.toLowerCase();
+
+            if (recipeName.includes(searchQuery)) {
+                item.style.display = 'flex';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    }
+
+    document.getElementById('event-search-input').addEventListener('input', filterAndSortRecipes);
+
+    function openEventDetails(element) {
+            var eventId = element.getAttribute('data-id');
+            window.location.href = '/api/Event/' + eventId;
+        }
+</script>
+

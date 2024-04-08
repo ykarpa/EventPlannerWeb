@@ -18,9 +18,10 @@ namespace EventPlannerWeb.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Recipe>>> GetRecipes()
+        public async Task<IActionResult> RecipeList()
         {
-            return await _context.Recipe.ToListAsync();
+            var recipeList = await _context.Recipe.ToListAsync(); 
+            return View(recipeList); 
         }
 
         [HttpGet("{id}")]
@@ -59,12 +60,6 @@ namespace EventPlannerWeb.Controllers
             await _context.SaveChangesAsync();
 
             return Ok();
-        }
-
-
-        public IActionResult Index()
-        {
-            return View();
         }
 
         private IEnumerable<string> GetModelValidationErrors()

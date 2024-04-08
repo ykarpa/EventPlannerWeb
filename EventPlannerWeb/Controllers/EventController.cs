@@ -18,20 +18,25 @@ namespace EventPlannerWeb.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Event>>> GetEvents()
+        public async Task<IActionResult> EventList()
         {
-            return await _context.Event.ToListAsync();
+            var eventList = await _context.Event.ToListAsync();
+            return View(eventList);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Event>> GetEvent(int id)
+        public async Task<IActionResult> EventPage(int id)
         {
-            var even = await _context.Event.FirstOrDefaultAsync(u => u.EventId == id);
+            var even = await _context.Event
+                .Include(e => e.EventGuests) 
+                .Include(e => e.EventRecipes) 
+                .FirstOrDefaultAsync(e => e.EventId == id);
 
-            if (even == default) return NotFound();
+            if (even == null) return NotFound();
 
-            return even;
+            return View("EventPage", even); 
         }
+
 
         [HttpPost]
         public async Task<ActionResult> AddEvent(Event even)

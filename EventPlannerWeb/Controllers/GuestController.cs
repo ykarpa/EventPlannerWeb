@@ -18,19 +18,20 @@ namespace EventPlannerWeb.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Guest>>> GetGuests()
+        public async Task<IActionResult> GuestList()
         {
-            return await _context.Guest.ToListAsync();
+            var guestList = await _context.Guest.ToListAsync();
+            return View(guestList);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Guest>> GetGuest(int id)
+        public async Task<IActionResult> GuestPage(int id)
         {
             var guest = await _context.Guest.FirstOrDefaultAsync(g => g.GuestId == id);
 
-            if (guest == default) return NotFound();
+            if (guest == null) return NotFound();
 
-            return guest;
+            return View(guest); 
         }
 
         [HttpPost]
@@ -59,12 +60,6 @@ namespace EventPlannerWeb.Controllers
             await _context.SaveChangesAsync();
 
             return Ok();
-        }
-
-
-        public IActionResult Index()
-        {
-            return View();
         }
 
         private IEnumerable<string> GetModelValidationErrors()

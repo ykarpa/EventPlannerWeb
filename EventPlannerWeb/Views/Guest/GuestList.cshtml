@@ -1,0 +1,158 @@
+﻿@model List<EventPlannerWeb.Models.Guest> 
+
+@{
+    ViewData["Title"] = "Guest List";
+}
+
+<html>
+<head>
+    <title>@ViewData["Title"]</title>
+</head>
+<body>
+    <style>
+        .guest-list-page {
+            margin-top: 150px;
+            margin-left: 300px;
+        }
+
+        .guest-list-header-part {
+            display:flex;
+            flex-direction:row;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .guest-list-header {
+            font-size: 30px;
+            margin-bottom: 20px;
+        }
+
+        /* Recipe search input field */
+        .guest-search {
+            width: 300px; /* Adjust width as needed */
+            height: 40px;
+            padding: 8px 12px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-right: 10px; /* Adjust spacing */
+        }
+
+        /* Search button */
+        .button-search {
+            height: 40px;
+            padding: 0 20px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #007bff; /* Adjust color */
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease; /* Smooth transition */
+        }
+
+        .button-search:hover {
+            background-color: #0056b3; /* Darker color on hover */
+        }
+
+        .add-guest {
+            width: 120px;
+            height: 55px;
+            background-color: white;
+            font-size: 20px;
+            color: #8B92D0;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-right: 320px;
+        }
+
+        .guest-list-element {
+            width: 900px;
+            height: 50px;
+            background-color: gainsboro;
+            display: flex;
+            justify-content: space-between;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        .guest-name {
+            cursor: pointer;
+            padding-left: 20px;
+            padding-top: 15px;
+            font-size: 20px;
+        }
+
+        .guest-info {
+            display: flex;
+            flex-direction: row;
+            margin-right: 100px;
+        }
+
+        .guest-info-text {
+            cursor: pointer;
+            padding-left: 20px;
+            padding-top: 15px;
+            font-size: 20px;
+        }
+
+        .guest-gender {
+            margin-right: 20px;
+                        cursor: pointer;
+            padding-left: 20px;
+            padding-top: 15px;
+            font-size: 20px;
+        }
+    </style>
+    <div class="guest-list-page">
+    <div class="guest-list-header">Список гостей</div>
+    <div class="guest-list-header-part">
+        <div class="search-part">
+            <input type="text" id="guest-search-input" class="guest-search" placeholder="Пошук за іменем та прізвищем гостя">
+            <button class="button-search" onclick="filterAndSortRecipes()">Пошук</button>
+        </div>
+        <button class="add-guest">Додати гостя</button>
+    </div>
+    <div class="guest-list" id="guest-list-container">
+        @foreach (var guest in Model)
+        {
+        <div class="guest-list-element" data-id="@guest.GuestId" onclick="openGuestDetails(this)">
+            <div class="guest-info">
+            <div class="guest-name">@guest.Name</div>
+            <div class="guest-info-text"> @guest.Surname</div>
+            </div>
+            <div class="guest-gender"> @guest.Gender</div>
+
+        </div> 
+        }
+    </div>
+</div>
+</body>
+</html>
+
+<script>
+    function filterAndSortRecipes() {
+        var searchQuery = document.getElementById('guest-search-input').value.toLowerCase();
+        var recipeListContainer = document.getElementById('guest-list-container');
+        var recipeListItems = recipeListContainer.getElementsByClassName('guest-list-element');
+
+        Array.from(recipeListItems).forEach(function(item) {
+            var recipeName = item.getElementsByClassName('guest-name')[0].innerText.toLowerCase();
+
+            if (recipeName.includes(searchQuery)) {
+                item.style.display = 'flex';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    }
+
+    document.getElementById('guest-search-input').addEventListener('input', filterAndSortRecipes);
+
+    function openGuestDetails(element) {
+    var guestId = element.getAttribute('data-id');
+    window.location.href = 'Guest/' + guestId; // Оновіть URL відповідно до вашої маршрутизації
+}
+
+</script>
+
