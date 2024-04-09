@@ -1,0 +1,76 @@
+﻿@model EventPlannerWeb.Models.Recipe
+
+@{
+    ViewData["Title"] = "Recipe Details";
+}
+
+<html>
+<head>
+    <title>@ViewData["Title"]</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin-top: 150px;
+            padding: 0;
+            background-color: #f7f7f7;
+        }
+
+        .container {
+            width: 80%;
+            margin: 30px auto;
+        }
+
+        .card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+            .card h1 {
+                color: #333;
+                font-size: 24px;
+                margin-bottom: 10px;
+            }
+
+            .card p {
+                color: #666;
+                line-height: 1.6;
+                margin: 10px 0;
+            }
+
+        .price {
+            font-size: 20px;
+            color: #27ae60;
+            margin-bottom: 20px;
+        }
+
+        .back-to-list {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 15px;
+            background-color: #3498db;
+            color: #fff;
+            border-radius: 4px;
+            text-decoration: none;
+        }
+
+            .back-to-list:hover {
+                background-color: #2980b9;
+            }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>@Model.Name</h1>
+            <p class="price">Ціна: @Model.Price.ToString("C2")</p>
+            <p class="calories">Калорії: @Model.Calories.ToString() ккал</p>
+            <p class="cooking time">Час приготування: @Model.CookingTime.ToString() хв</p>
+            <p class="description">Опис: @Model.Description</p>
+            <a href="@Url.Action("RecipeList", "Recipe")" class="back-to-list">Назад до списку</a>
+        </div>
+    </div>
+</body>
+</html>

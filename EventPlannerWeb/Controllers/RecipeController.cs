@@ -25,38 +25,49 @@ namespace EventPlannerWeb.Controllers
         //    return View(recipeList); 
         //}
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Recipe>>> GetRecipes()
-        {
-            var recipeDTOs = await _context.Recipe
-                .Include(r => r.IngredientsRecipe)
-                .ThenInclude(ir => ir.Ingredient)
-                .Select(r => new RecipeDTO
-                {
-                    Recipe = r,
-                    Ingredients = r.IngredientsRecipe.Select(ir => ir.Ingredient.Name).ToList(),
-                    IngredientsAmount = r.IngredientsRecipe.Select(ir => ir.Amount).ToList(),
-                }).ToListAsync();
-            return Ok(recipeDTOs);
-        }
+        //[HttpGet]
+        //public async Task<ActionResult<IEnumerable<Recipe>>> GetRecipes()
+        //{
+        //    var recipeDTOs = await _context.Recipe
+        //        .Include(r => r.IngredientsRecipe)
+        //        .ThenInclude(ir => ir.Ingredient)
+        //        .Select(r => new RecipeDTO
+        //        {
+        //            Recipe = r,
+        //            Ingredients = r.IngredientsRecipe.Select(ir => ir.Ingredient.Name).ToList(),
+        //            IngredientsAmount = r.IngredientsRecipe.Select(ir => ir.Amount).ToList(),
+        //        }).ToListAsync();
+        //    return Ok(recipeDTOs);
+        //}
+
+        //[HttpGet("{id}")]
+        //public async Task<ActionResult<RecipeDTO>> GetRecipe(int id)
+        //{
+        //    var recipeDTO = await _context.Recipe
+        //        .Where(r => r.RecipeId == id)
+        //        .Include(r => r.IngredientsRecipe)
+        //        .ThenInclude(ir => ir.Ingredient)
+        //        .Select(r => new RecipeDTO
+        //        {
+        //            Recipe = r,
+        //            Ingredients = r.IngredientsRecipe.Select(ir => ir.Ingredient.Name).ToList(),
+        //            IngredientsAmount = r.IngredientsRecipe.Select(ir => ir.Amount).ToList(),
+        //        }).FirstOrDefaultAsync();
+
+        //    if (recipeDTO == default) return NotFound();
+
+        //    return recipeDTO;
+        //}
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<RecipeDTO>> GetRecipe(int id)
+        public async Task<IActionResult> RecipePage(int id)
         {
-            var recipeDTO = await _context.Recipe
-                .Where(r => r.RecipeId == id)
-                .Include(r => r.IngredientsRecipe)
-                .ThenInclude(ir => ir.Ingredient)
-                .Select(r => new RecipeDTO
-                {
-                    Recipe = r,
-                    Ingredients = r.IngredientsRecipe.Select(ir => ir.Ingredient.Name).ToList(),
-                    IngredientsAmount = r.IngredientsRecipe.Select(ir => ir.Amount).ToList(),
-                }).FirstOrDefaultAsync();
+            var rec = await _context.Recipe
+                .FirstOrDefaultAsync(e => e.RecipeId == id);
 
-            if (recipeDTO == default) return NotFound();
+            if (rec == null) return NotFound();
 
-            return recipeDTO;
+            return View("RecipePage", rec);
         }
 
         [HttpPost]
