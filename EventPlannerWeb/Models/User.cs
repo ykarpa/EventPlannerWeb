@@ -11,7 +11,7 @@ namespace EventPlannerWeb.Models
     {
         public int UserId { get; set; }
 
-        public string? Surname { get; set; } = default;
+        public string Surname { get; set; }
 
         public string Name { get; set; }
 
@@ -25,9 +25,9 @@ namespace EventPlannerWeb.Models
         public virtual ICollection<Event>? Events { get; set; }
 
         [JsonIgnore]
-        public virtual ICollection<Guest?> Guests { get; set; }
+        public virtual ICollection<Guest>? Guests { get; set; }
 
-        public Gender Gender { get; set; }
+        public Gender? Gender { get; set; }
 
         public DateTime CreatedDate { get; set; }
 

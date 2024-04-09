@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace EventPlannerWeb.Models
@@ -10,11 +11,13 @@ namespace EventPlannerWeb.Models
     {
         public int EventRecipeId { get; set; }
 
-        public Event Event { get; set; }
+        [JsonIgnore]
+        public Event? Event { get; set; }
 
         public int EventId { get; set; }
 
-        public Recipe Recipe { get; set; }
+        [JsonIgnore]
+        public Recipe? Recipe { get; set; }
 
         public int RecipeId { get; set; }
     }

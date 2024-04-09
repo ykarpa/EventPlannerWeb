@@ -1,4 +1,5 @@
 ﻿using EventPlannerWeb.Data;
+using EventPlannerWeb.DTO;
 using EventPlannerWeb.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -17,30 +18,66 @@ namespace EventPlannerWeb.Controllers
             _context = context;
         }
 
+        //[HttpGet]
+        //public async Task<IActionResult> RecipeList()
+        //{
+        //    var recipeList = await _context.Recipe.ToListAsync(); 
+        //    return View(recipeList); 
+        //}
+
         [HttpGet]
-        public async Task<IActionResult> RecipeList()
+        public async Task<ActionResult<IEnumerable<Recipe>>> GetRecipes()
         {
-            var recipeList = await _context.Recipe.ToListAsync(); 
-            return View(recipeList); 
+            var recipeDTOs = await _context.Recipe
+                .Include(r => r.IngredientsRecipe)
+                .ThenInclude(ir => ir.Ingredient)
+                .Select(r => new RecipeDTO
+                {
+                    Recipe = r,
+                    Ingredients = r.IngredientsRecipe.Select(ir => ir.Ingredient.Name).ToList(),
+                    IngredientsAmount = r.IngredientsRecipe.Select(ir => ir.Amount).ToList(),
+                }).ToListAsync();
+            return Ok(recipeDTOs);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Recipe>> GetRecipe(int id)
+        public async Task<ActionResult<RecipeDTO>> GetRecipe(int id)
         {
-            var recipe = await _context.Recipe.FirstOrDefaultAsync(r => r.RecipeId == id);
+            var recipeDTO = await _context.Recipe
+                .Where(r => r.RecipeId == id)
+                .Include(r => r.IngredientsRecipe)
+                .ThenInclude(ir => ir.Ingredient)
+                .Select(r => new RecipeDTO
+                {
+                    Recipe = r,
+                    Ingredients = r.IngredientsRecipe.Select(ir => ir.Ingredient.Name).ToList(),
+                    IngredientsAmount = r.IngredientsRecipe.Select(ir => ir.Amount).ToList(),
+                }).FirstOrDefaultAsync();
 
-            if (recipe == default) return NotFound();
+            if (recipeDTO == default) return NotFound();
 
-            return recipe;
+            return recipeDTO;
         }
 
         [HttpPost]
-        public async Task<ActionResult> AddRecipe(Recipe recipe)
+        public async Task<ActionResult> AddRecipe(RecipeDTO recipeDTO)
         {
             if (ModelState.IsValid)
             {
+                var recipe = recipeDTO.Recipe;
                 await _context.Recipe.AddAsync(recipe);
                 await _context.SaveChangesAsync();
+
+                for (int i = 0; i < recipeDTO.Ingredients.Count; ++i)
+                {
+                    int ingId = await GetIngredientIdByNameAsync(recipeDTO.Ingredients[i]);
+                    if (ingId != -1)
+                    {
+                        var ingredientRecipe = new IngredientRecipe { Amount = recipeDTO.IngredientsAmount[i], IngredientId = ingId, RecipeId = recipe.RecipeId };
+                        await _context.IngredientRecipe.AddAsync(ingredientRecipe);
+                        await _context.SaveChangesAsync();
+                    }
+                }
 
                 return Ok();
             }
@@ -60,6 +97,22 @@ namespace EventPlannerWeb.Controllers
             await _context.SaveChangesAsync();
 
             return Ok();
+        }
+
+        public async Task<int> GetIngredientIdByNameAsync(string ingredientName)
+        {
+            var ingredient = await _context.Ingredient
+                .FirstOrDefaultAsync(a => a.Name == ingredientName);
+
+            if (ingredient != null)
+            {
+                return ingredient.IngredientId;
+            }
+            else
+            {
+                // Handle the case where the author is not found
+                return -1; // Or throw an exception, return null, etc.
+            }
         }
 
         private IEnumerable<string> GetModelValidationErrors()

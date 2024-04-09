@@ -21,7 +21,7 @@
         [JsonIgnore]
         public ICollection<EventGuest>? GuestEvents { get; set; }
 
-        public string? Name { get; set; }
+        public string Name { get; set; }
 
         public Gender Gender { get; set; }
     }
