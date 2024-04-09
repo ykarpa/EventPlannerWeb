@@ -1,0 +1,126 @@
+﻿@model EventPlannerWeb.DTO.EventDTO
+
+@{
+    ViewData["Title"] = "Add Event";
+}
+
+<html>
+<head>
+    <title>@ViewData["Title"]</title>
+    <style>
+        <style >
+        body {
+            font-family: 'Arial', sans-serif;
+            margin-top: 150px;
+            padding: 0;
+            background-color: #f7f7f7;
+        }
+
+        .container {
+            width: 80%;
+            margin: 30px auto;
+        }
+
+        .card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+            .card h1 {
+                color: #333;
+                font-size: 24px;
+                margin-bottom: 10px;
+            }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        textarea {
+            height: 100px;
+        }
+
+        .btn-primary {
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+
+            .btn-primary:hover {
+                background-color: #2980b9;
+            }
+
+        .back-to-list {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 15px;
+            background-color: #3498db;
+            color: #fff;
+            border-radius: 4px;
+            text-decoration: none;
+        }
+
+            .back-to-list:hover {
+                background-color: #2980b9;
+            }
+    </style>
+    </style>
+</head>
+<body>
+    <h1>Add Event</h1>
+    <form method="post" action="/api/Event/AddEvent" enctype="multipart/form-data">
+        <div>
+            <label for="eventName">Event Name:</label>
+            <input type="text" id="eventName" name="Event.Name" required>
+        </div>
+        <!-- Add more form fields for event details, such as date, location, etc. -->
+        <!-- Guests selection (if applicable) -->
+        <div>
+            <label for="selectedGuests">Select Guests:</label>
+            <select id="selectedGuests" name="SelectedGuests" multiple>
+                @foreach (var guest in Model.Guests)
+                {
+                    <option value="@guest.GuestId">@guest.Name</option>
+                }
+            </select>
+        </div>
+
+        <!-- Recipes selection (if applicable) -->
+        <div>
+            <label for="selectedRecipes">Select Recipes:</label>
+            <select id="selectedRecipes" name="SelectedRecipes" multiple>
+                @foreach (var recipe in Model.Recipes)
+                {
+                    <option value="@recipe.RecipeId">@recipe.Name</option>
+                }
+            </select>
+        </div>
+
+        <div>
+            <button type="submit">Add Event</button>
+        </div>
+    </form>
+</body>
+</html>

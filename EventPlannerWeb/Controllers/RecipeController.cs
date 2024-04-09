@@ -2,6 +2,7 @@
 using EventPlannerWeb.DTO;
 using EventPlannerWeb.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace EventPlannerWeb.Controllers
@@ -69,33 +70,55 @@ namespace EventPlannerWeb.Controllers
 
             return View("RecipePage", rec);
         }
-
-        [HttpPost]
-        public async Task<ActionResult> AddRecipe(RecipeDTO recipeDTO)
+        [HttpGet("AddRecipePage")]
+        public async Task<IActionResult> AddRecipePage()
         {
+            var ingredients = await _context.Ingredient
+                .Select(i => new SelectListItem { Value = i.IngredientId.ToString(), Text = i.Name })
+                .ToListAsync();
+
+            ViewBag.Ingredients = ingredients;
+
+            return View("AddRecipe");
+        }
+
+        [HttpPost("AddRecipe")]
+        public async Task<ActionResult> AddRecipe([FromBody] RecipeDTO recipeWithIngredientsDTO)
+        {
+            RecipeDTO recipeDTO = recipeWithIngredientsDTO;
+            List<string> selectedIngredients = recipeWithIngredientsDTO.Ingredients;
+
             if (ModelState.IsValid)
             {
                 var recipe = recipeDTO.Recipe;
+
+                // Add recipe to the database
                 await _context.Recipe.AddAsync(recipe);
                 await _context.SaveChangesAsync();
 
-                for (int i = 0; i < recipeDTO.Ingredients.Count; ++i)
+                // Add ingredients to the recipe
+                foreach (var ingredientIdString in selectedIngredients)
                 {
-                    int ingId = await GetIngredientIdByNameAsync(recipeDTO.Ingredients[i]);
-                    if (ingId != -1)
+                    if (int.TryParse(ingredientIdString, out int ingredientId))
                     {
-                        var ingredientRecipe = new IngredientRecipe { Amount = recipeDTO.IngredientsAmount[i], IngredientId = ingId, RecipeId = recipe.RecipeId };
+                        var ingredientRecipe = new IngredientRecipe { IngredientId = ingredientId, RecipeId = recipe.RecipeId };
                         await _context.IngredientRecipe.AddAsync(ingredientRecipe);
-                        await _context.SaveChangesAsync();
+                    }
+                    else
+                    {
+                        // Handle invalid ingredientId
+                        return BadRequest($"Invalid ingredient ID: {ingredientIdString}");
                     }
                 }
+                await _context.SaveChangesAsync();
 
                 return Ok();
             }
-            var message = GetModelValidationErrors();
 
+            var message = GetModelValidationErrors();
             return BadRequest(message);
         }
+
 
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteRecipe(int id)
