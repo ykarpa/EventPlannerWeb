@@ -25,7 +25,16 @@ namespace EventPlannerWeb.Controllers
         //    var recipeList = await _context.Recipe.ToListAsync(); 
         //    return View(recipeList); 
         //}
+        [HttpGet("{id}")]
+        public async Task<IActionResult> RecipePage(int id)
+        {
+            var rec = await _context.Recipe
+                .FirstOrDefaultAsync(e => e.RecipeId == id);
 
+            if (rec == null) return NotFound();
+
+            return View("RecipePage", rec);
+        }
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Recipe>>> RecipeList()
         {
@@ -41,24 +50,24 @@ namespace EventPlannerWeb.Controllers
             return View(recipeDTOs);
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<RecipeDTO>> GetRecipe(int id)
-        {
-            var recipeDTO = await _context.Recipe
-                .Where(r => r.RecipeId == id)
-                .Include(r => r.IngredientsRecipe)
-                .ThenInclude(ir => ir.Ingredient)
-                .Select(r => new RecipeDTO
-                {
-                    Recipe = r,
-                    Ingredients = r.IngredientsRecipe.Select(ir => ir.Ingredient.Name).ToList(),
-                    IngredientsAmount = r.IngredientsRecipe.Select(ir => ir.Amount).ToList(),
-                }).FirstOrDefaultAsync();
+        //[HttpGet]
+        //public async Task<ActionResult<RecipeDTO>> GetRecipe(int id)
+        //{
+        //    var recipeDTO = await _context.Recipe
+        //        .Where(r => r.RecipeId == id)
+        //        .Include(r => r.IngredientsRecipe)
+        //        .ThenInclude(ir => ir.Ingredient)
+        //        .Select(r => new RecipeDTO
+        //        {
+        //            Recipe = r,
+        //            Ingredients = r.IngredientsRecipe.Select(ir => ir.Ingredient.Name).ToList(),
+        //            IngredientsAmount = r.IngredientsRecipe.Select(ir => ir.Amount).ToList(),
+        //        }).FirstOrDefaultAsync();
 
-            if (recipeDTO == default) return NotFound();
+        //    if (recipeDTO == default) return NotFound();
 
-            return recipeDTO;
-        }
+        //    return recipeDTO;
+        //}
 
         [HttpGet("AddRecipe")]
         public async Task<IActionResult> AddRecipePage()
