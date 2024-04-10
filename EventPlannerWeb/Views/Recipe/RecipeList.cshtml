@@ -1,4 +1,4 @@
-﻿@model List<EventPlannerWeb.Models.Recipe> 
+﻿@model List<EventPlannerWeb.DTO.RecipeDTO> 
 
 @{
     ViewData["Title"] = "Recipe List";
@@ -110,11 +110,11 @@
         @foreach (var recipe in Model)
         {
         <div class="recipe-list-element">
-            <div class="recipe-name">@recipe.Name</div>
+            <div class="recipe-name">@recipe.Recipe.Name</div>
             <div class="recipe-info">
-            <div class="recipe-info-text"> @recipe.CookingTime хв</div>
-            <div class="recipe-info-text"> @recipe.Price грн</div>
-            <div class="recipe-info-text"> @recipe.Calories ккал</div>
+            <div class="recipe-info-text"> @recipe.Recipe.CookingTime хв</div>
+            <div class="recipe-info-text"> @recipe.Recipe.Price грн</div>
+            <div class="recipe-info-text"> @recipe.Recipe.Calories ккал</div>
             </div>
         </div> 
         }

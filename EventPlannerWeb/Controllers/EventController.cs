@@ -45,7 +45,7 @@ namespace EventPlannerWeb.Controllers
             }).ToList();
 
 
-            return Ok(eventDTOs);
+            return View(eventDTOs);
             //return View(eventList);
         }
 

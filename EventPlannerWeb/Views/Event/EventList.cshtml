@@ -1,4 +1,4 @@
-﻿@model List<EventPlannerWeb.Models.Event> 
+﻿@model List<EventPlannerWeb.DTO.EventDTO> 
 
 @{
     ViewData["Title"] = "Event List";
@@ -116,12 +116,12 @@
     <div class="event-list" id="event-list-container">
         @foreach (var event_ in Model)
         {
-<div class="event-list-element" data-id="@event_.EventId" onclick="openEventDetails(this)">
+<div class="event-list-element" data-id="@event_.Event.EventId" onclick="openEventDetails(this)">
             <div class="event-info">
-            <div class="event-name">@event_.Name</div>
-            <div class="event-info-text"> @event_.Price грн</div>
+            <div class="event-name">@event_.Event.Name</div>
+            <div class="event-info-text"> @event_.Event.Price грн</div>
             </div>
-            <div class="event-date"> @event_.CreatedDate</div>
+            <div class="event-date"> @event_.Event.CreatedDate</div>
 
         </div> 
         }
