@@ -2,6 +2,7 @@
 using EventPlannerWeb.DTO;
 using EventPlannerWeb.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace EventPlannerWeb.Controllers
@@ -62,6 +63,24 @@ namespace EventPlannerWeb.Controllers
             return View("EventPage", even); 
         }
 
+
+        [HttpGet("AddEvent")]
+        public async Task<IActionResult> AddEventPage()
+        {
+            var recipes = await _context.Recipe
+                .Select(i => new SelectListItem { Value = i.RecipeId.ToString(), Text = i.Name })
+                .ToListAsync();
+
+            ViewBag.Recipes = recipes;
+
+            var guests = await _context.Guest
+                .Select(i => new SelectListItem { Value = i.GuestId.ToString(), Text = i.Name })
+                .ToListAsync();
+
+            ViewBag.Guests = guests;
+
+            return View("AddEvent");
+        } 
 
         [HttpPost]
         public async Task<ActionResult> AddEvent(EventDTO evenDTO)
