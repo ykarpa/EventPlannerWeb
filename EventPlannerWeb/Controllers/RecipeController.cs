@@ -2,6 +2,7 @@
 using EventPlannerWeb.DTO;
 using EventPlannerWeb.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace EventPlannerWeb.Controllers
@@ -57,6 +58,18 @@ namespace EventPlannerWeb.Controllers
             if (recipeDTO == default) return NotFound();
 
             return recipeDTO;
+        }
+
+        [HttpGet("AddRecipe")]
+        public async Task<IActionResult> AddRecipePage()
+        {
+            var ingredients = await _context.Ingredient
+                .Select(i => new SelectListItem { Value = i.IngredientId.ToString(), Text = i.Name })
+                .ToListAsync();
+
+            ViewBag.Ingredients = ingredients;
+
+            return View("AddRecipe");
         }
 
         [HttpPost]

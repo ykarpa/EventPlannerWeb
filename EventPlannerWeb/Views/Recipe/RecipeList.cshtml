@@ -1,4 +1,4 @@
-﻿@model List<EventPlannerWeb.DTO.RecipeDTO> 
+﻿@model List<EventPlannerWeb.DTO.RecipeDTO>
 
 @{
     ViewData["Title"] = "Recipe List";
@@ -7,8 +7,6 @@
 <html>
 <head>
     <title>@ViewData["Title"]</title>
-</head>
-<body>
     <style>
         .recipe-list-page {
             margin-top: 150px;
@@ -16,8 +14,8 @@
         }
 
         .recipe-list-header-part {
-            display:flex;
-            flex-direction:row;
+            display: flex;
+            flex-direction: row;
             justify-content: space-between;
             align-items: center;
         }
@@ -51,9 +49,9 @@
             transition: background-color 0.3s ease; /* Smooth transition */
         }
 
-        .button-search:hover {
-            background-color: #0056b3; /* Darker color on hover */
-        }
+            .button-search:hover {
+                background-color: #0056b3; /* Darker color on hover */
+            }
 
         .add-recipe {
             width: 120px;
@@ -94,59 +92,63 @@
             padding-top: 15px;
             font-size: 20px;
         }
-
-
     </style>
+</head>
+<body>
     <div class="recipe-list-page">
-    <div class="recipe-list-header">Список рецептів</div>
-    <div class="recipe-list-header-part">
-        <div class="search-part">
-            <input type="text" id="recipe-search-input" class="recipe-search" placeholder="Пошук за назвою рецепту">
-            <button class="button-search" onclick="filterAndSortRecipes()">Пошук</button>
-        </div>
-        <button class="add-recipe">Додати рецепт</button>
-    <</div>
-    <div class="recipe-list" id="recipe-list-container">
-        @foreach (var recipe in Model)
-        {
-        <div class="recipe-list-element">
-            <div class="recipe-name">@recipe.Recipe.Name</div>
-            <div class="recipe-info">
-            <div class="recipe-info-text"> @recipe.Recipe.CookingTime хв</div>
-            <div class="recipe-info-text"> @recipe.Recipe.Price грн</div>
-            <div class="recipe-info-text"> @recipe.Recipe.Calories ккал</div>
+        <div class="recipe-list-header">Список рецептів</div>
+        <div class="recipe-list-header-part">
+            <div class="search-part">
+                <input type="text" id="recipe-search-input" class="recipe-search" placeholder="Пошук за назвою рецепту">
+                <button class="button-search" onclick="filterAndSortRecipes()">Пошук</button>
             </div>
-        </div> 
-        }
+            <button class="add-recipe">Додати рецепт</button>
+        </div>
+        <div class="recipe-list" id="recipe-list-container">
+            @foreach (var recipe in Model)
+            {
+                <div class="recipe-list-element">
+                    <div class="recipe-name">@recipe.Recipe.Name</div>
+                    <div class="recipe-info">
+                        <div class="recipe-info-text"> @recipe.Recipe.CookingTime хв</div>
+                        <div class="recipe-info-text"> @recipe.Recipe.Price грн</div>
+                        <div class="recipe-info-text"> @recipe.Recipe.Calories ккал</div>
+                    </div>
+                </div>
+            }
+        </div>
     </div>
-</div>
+
+    <script>
+        function filterAndSortRecipes() {
+            var searchQuery = document.getElementById('recipe-search-input').value.toLowerCase();
+            var recipeListContainer = document.getElementById('recipe-list-container');
+            var recipeListItems = recipeListContainer.getElementsByClassName('recipe-list-element');
+
+            // Loop through each recipe list item
+            Array.from(recipeListItems).forEach(function (item) {
+                var recipeName = item.getElementsByClassName('recipe-name')[0].innerText.toLowerCase();
+
+                // If the recipe name contains the search query, show the item; otherwise, hide it
+                if (recipeName.includes(searchQuery)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        // Add event listener to the search input field
+        document.getElementById('recipe-search-input').addEventListener('input', filterAndSortRecipes);
+
+        // Function to handle the click event on the "Додати рецепт" button
+        function openAddRecipePage() {
+            // Redirect to the AddRecipe page
+            window.location.href = 'AddRecipe'; // Update the URL according to your routing
+        }
+
+        // Add event listener to the "Додати рецепт" button
+        document.querySelector('.add-recipe').addEventListener('click', openAddRecipePage);
+    </script>
 </body>
 </html>
-
-<script>
-    function filterAndSortRecipes() {
-        var searchQuery = document.getElementById('recipe-search-input').value.toLowerCase();
-        var recipeListContainer = document.getElementById('recipe-list-container');
-        var recipeListItems = recipeListContainer.getElementsByClassName('recipe-list-element');
-
-        // Loop through each recipe list item
-        Array.from(recipeListItems).forEach(function(item) {
-            var recipeName = item.getElementsByClassName('recipe-name')[0].innerText.toLowerCase();
-
-            // If the recipe name contains the search query, show the item; otherwise, hide it
-            if (recipeName.includes(searchQuery)) {
-                item.style.display = 'flex';
-            } else {
-                item.style.display = 'none';
-            }
-        });
-    }
-
-    // Add event listener to the search input field
-    document.getElementById('recipe-search-input').addEventListener('input', filterAndSortRecipes);
-
-    function openRecipeDetails(element) {
-        var recipeId = element.getAttribute('data-id');
-        window.location.href = 'api/Recipe/' + recipeId; // Оновіть URL відповідно до вашої маршрутизації
-    }
-</script>
