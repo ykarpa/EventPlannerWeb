@@ -107,7 +107,7 @@
         <div class="recipe-list" id="recipe-list-container">
             @foreach (var recipe in Model)
             {
-                <div class="recipe-list-element">
+                <div class="recipe-list-element" data-id="@recipe.Recipe.RecipeId" onclick="openRecipeDetails(this)">
                     <div class="recipe-name">@recipe.Recipe.Name</div>
                     <div class="recipe-info">
                         <div class="recipe-info-text"> @recipe.Recipe.CookingTime хв</div>
@@ -140,11 +140,15 @@
 
         // Add event listener to the search input field
         document.getElementById('recipe-search-input').addEventListener('input', filterAndSortRecipes);
-
+        
+        function openRecipeDetails(element) {
+            var recipeId = element.getAttribute('data-id');
+            window.location.href = '/api/Recipe/' + recipeId;
+        }
         // Function to handle the click event on the "Додати рецепт" button
         function openAddRecipePage() {
             // Redirect to the AddRecipe page
-            window.location.href = 'AddRecipe'; // Update the URL according to your routing
+            window.location.href = '/api/Recipe/AddRecipe'; // Update the URL according to your routing
         }
 
         // Add event listener to the "Додати рецепт" button

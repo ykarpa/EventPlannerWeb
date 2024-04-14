@@ -131,7 +131,7 @@
 </html>
 
 <script>
-    function filterAndSortRecipes() {
+    function filterAndSortEvents() {
         var searchQuery = document.getElementById('event-search-input').value.toLowerCase();
         var recipeListContainer = document.getElementById('event-list-container');
         var recipeListItems = recipeListContainer.getElementsByClassName('event-list-element');
@@ -147,11 +147,23 @@
         });
     }
 
-    document.getElementById('event-search-input').addEventListener('input', filterAndSortRecipes);
+    document.getElementById('event-search-input').addEventListener('input', filterAndSortEvents);
 
     function openEventDetails(element) {
             var eventId = element.getAttribute('data-id');
             window.location.href = '/api/Event/' + eventId;
         }
+
+    // Add event listener to the search input field
+    document.getElementById('event-search-input').addEventListener('input', filterAndSortEvents);
+
+    // Function to handle the click event on the "Додати рецепт" button
+    function openAddEventPage() {
+        // Redirect to the AddRecipe page
+        window.location.href = '/api/Event/AddEvent'; // Update the URL according to your routing
+    }
+
+    // Add event listener to the "Додати рецепт" button
+    document.querySelector('.add-event').addEventListener('click', openAddEventPage);
 </script>
 

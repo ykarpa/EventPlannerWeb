@@ -1,6 +1,7 @@
 ﻿using EventPlannerWeb.Data;
 using EventPlannerWeb.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace EventPlannerWeb.Controllers
@@ -31,7 +32,20 @@ namespace EventPlannerWeb.Controllers
 
             if (guest == null) return NotFound();
 
-            return View(guest); 
+            return View("GuestPage", guest); 
+        }
+
+        [HttpGet("AddGuest")]
+        public async Task<IActionResult> AddGuestPage()
+        {
+
+            var guests = await _context.Guest
+               .Select(i => new SelectListItem { Value = i.GuestId.ToString(), Text = i.Name })
+               .ToListAsync();
+
+            ViewBag.Guests = guests;
+
+            return View("AddGuest");
         }
 
         [HttpPost]
