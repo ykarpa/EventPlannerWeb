@@ -19,47 +19,37 @@ namespace EventPlannerWeb.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<EventDTO>>> EventList()
+        public async Task<ActionResult<IEnumerable<Event>>> EventList()
         {
-            //var eventguest = await _context.Event
-            //    .Include(e => e.EventGuests)
-            //    .ThenInclude(e => e.Guest).Select(e => e.EventGuests.Select(eg => eg.Guest)).ToListAsync();
-
-            //var eventrecipe = await _context.Event
-            //    .Include(e => e.EventRecipes)
-            //    .ThenInclude(e => e.Recipe).Select(e => e.EventRecipes.Select(eg => eg.Recipe)).ToListAsync();
-
-            var eventWithGuestsAndRecipes = await _context.Event
-                .Include(e => e.EventGuests)
-                .ThenInclude(e => e.Guest)
-                .Include(e => e.EventRecipes)
-                .ThenInclude(e => e.Recipe)
-                .ToListAsync();
+            var even = await _context.Event.ToListAsync();
 
 
-            var eventDTOs =eventWithGuestsAndRecipes.Select(eventWithGuestsAndRecipes => new EventDTO
-            {
-                Event = eventWithGuestsAndRecipes,
-                Recipes = eventWithGuestsAndRecipes.EventRecipes.Select(er => er.Recipe).ToList(),
-                Guests = eventWithGuestsAndRecipes.EventGuests.Select(eg => eg.Guest).ToList()
-            }).ToList();
-
-
-            return View(eventDTOs);
+            return View(even);
             //return View(eventList);
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> EventPage(int id)
+        //public async Task<IActionResult> EventPage(int id)
+        public async Task<ActionResult<EventDTO>> EventPage(int id)
         {
-            var even = await _context.Event
-                .Include(e => e.EventGuests) 
-                .Include(e => e.EventRecipes) 
-                .FirstOrDefaultAsync(e => e.EventId == id);
+            var eventWithGuestsAndRecipes = await _context.Event
+                .Where(e => e.EventId == id)
+               .Include(e => e.EventGuests)
+               .ThenInclude(e => e.Guest)
+               .Include(e => e.EventRecipes)
+               .ThenInclude(e => e.Recipe)
+                .FirstOrDefaultAsync();
 
-            if (even == null) return NotFound();
+            var eventDTO = new EventDTO
+            {
+                Event = eventWithGuestsAndRecipes,
+                Recipes = eventWithGuestsAndRecipes.EventRecipes.Select(er => er.Recipe.RecipeId).ToList(),
+                Guests = eventWithGuestsAndRecipes.EventGuests.Select(eg => eg.Guest.GuestId).ToList()
+            };
 
-            return View("EventPage", even); 
+            return eventDTO;
+
+            //return View("EventPage", even); 
         }
 
 
@@ -70,32 +60,28 @@ namespace EventPlannerWeb.Controllers
             if (ModelState.IsValid)
             {
                 var even = evenDTO.Event;
+                even.CreatedDate = DateTime.UtcNow;
                 await _context.Event.AddAsync(even);
                 await _context.SaveChangesAsync();
 
-                foreach(var guest in evenDTO.Guests)
+                foreach(var guestId in evenDTO.Guests)
                 {
-                    var guestNameSurname = $"{guest.Name} {guest.Surname}";
-                    int guestId = await GetGuestIdByNameAsync(guestNameSurname);
-                    if (guestId != -1)
+                    if (await GuestExists(guestId))
                     {
                         var eventGuest = new EventGuest { EventId = even.EventId, GuestId = guestId };
                         await _context.EventGuest.AddAsync(eventGuest);
-                        //await _context.SaveChangesAsync();
                     }
                     else
                     {
                         return BadRequest("Don't exist");
                     }
                 }
-                foreach (var recipe in evenDTO.Recipes)
+                foreach (var recipeId in evenDTO.Recipes)
                 {
-                    int recipeId = await GetRecipeIdByNameAsync(recipe.Name);
-                    if (recipeId != -1)
+                    if (await RecipeExists(recipeId))
                     {
                         var eventRecipe = new EventRecipe { EventId = even.EventId, RecipeId = recipeId };
                         await _context.EventRecipe.AddAsync(eventRecipe);
-                        //await _context.SaveChangesAsync();
                     }
                 }
 
@@ -120,37 +106,100 @@ namespace EventPlannerWeb.Controllers
             return Ok();
         }
 
-        public async Task<int> GetGuestIdByNameAsync(string guestName)
+        [HttpPut]
+        public async Task<ActionResult> UpdateEvent(EventDTO eventDTO)
         {
-            var gues = guestName.Split(' ');
-            var guest = await _context.Guest
-                .FirstOrDefaultAsync(a => a.Name == gues[0] && a.Surname == gues[1]);
+            if (eventDTO.Event.EventId == default || !EventExists(eventDTO.Event.EventId))
+                return NotFound();
 
-            if (guest != null)
+            if (!ModelState.IsValid)
+                return BadRequest();
+
+            eventDTO.Event.ModifiedDate = DateTime.UtcNow;
+
+            _context.Event.Update(eventDTO.Event);
+
+            var eventGuestToDelete = GetAllEventsGuests(eventDTO.Event.EventId);
+            var eventRecipeToDelete = GetAllEventsRecipes(eventDTO.Event.EventId);
+
+            foreach (var guestId in eventDTO.Guests)
             {
-                return guest.GuestId;
+                if (await GuestExists(guestId) && await GuestEventExists(guestId, eventDTO.Event.EventId) == false)
+                {
+                    var eventGuest = new EventGuest { EventId = eventDTO.Event.EventId, GuestId = guestId };
+                    await _context.EventGuest.AddAsync(eventGuest);
+                }
+                eventGuestToDelete.Remove(guestId);
             }
-            else
+            foreach(var guestToDeleteId in eventGuestToDelete)
             {
-                // Handle the case where the author is not found
-                return -1; // Or throw an exception, return null, etc.
+                var eventGuest = await _context.EventGuest.FirstOrDefaultAsync(e => e.EventId == eventDTO.Event.EventId && e.GuestId == guestToDeleteId);
+                _context.EventGuest.Remove(eventGuest);
             }
+
+            foreach (var recipeId in eventDTO.Recipes)
+            {
+                if (await RecipeExists(recipeId) && await RecipeEventExists(recipeId, eventDTO.Event.EventId) == false)
+                {
+                    var eventRecipe = new EventRecipe { EventId = eventDTO.Event.EventId, RecipeId = recipeId };
+                    await _context.EventRecipe.AddAsync(eventRecipe);
+                }
+                eventRecipeToDelete.Remove(recipeId);
+            }
+            foreach (var recipeToDeleteId in eventRecipeToDelete)
+            {
+                var eventRecipe = await _context.EventRecipe.FirstOrDefaultAsync(e => e.EventId == eventDTO.Event.EventId && e.RecipeId == recipeToDeleteId);
+                _context.EventRecipe.Remove(eventRecipe);
+            }
+            await _context.SaveChangesAsync();
+            return Ok();
         }
 
-        public async Task<int> GetRecipeIdByNameAsync(string recipeName)
+        private bool EventExists(int id)
         {
-            var recipe = await _context.Recipe
-                .FirstOrDefaultAsync(a => a.Name == recipeName);
+            return _context.Event.Any(e => e.EventId == id);
+        }
 
-            if (recipe != null)
+        private List<int> GetAllEventsRecipes(int eventId)
+        {
+            var eventRecipes =  _context.EventRecipe.Where(er => er.EventId == eventId).ToList();
+            var recipes = new List<int>();
+            foreach (var eventRecipe in eventRecipes)
             {
-                return recipe.RecipeId;
+                recipes.Add(eventRecipe.RecipeId);
             }
-            else
+            return recipes;
+        }
+
+        private List<int> GetAllEventsGuests(int eventId)
+        {
+            var eventGuests = _context.EventGuest.Where(er => er.EventId == eventId).ToList();
+            var guests = new List<int>();
+            foreach (var eventGuest in eventGuests)
             {
-                // Handle the case where the author is not found
-                return -1; // Or throw an exception, return null, etc.
+                guests.Add(eventGuest.GuestId);
             }
+            return guests;
+        }
+
+        private async Task<bool> RecipeEventExists(int recipeId, int eventId)
+        {
+            return await _context.EventRecipe.AnyAsync(ri => ri.RecipeId == recipeId && ri.EventId == eventId);
+        }
+
+        private async Task<bool> GuestEventExists(int guestId, int eventId)
+        {
+            return await _context.EventGuest.AnyAsync(ri => ri.GuestId == guestId && ri.EventId == eventId);
+        }
+
+        private async Task<bool> GuestExists(int guestId)
+        {
+            return await _context.Guest.AnyAsync(g => g.GuestId == guestId);
+        }
+
+        private async Task<bool> RecipeExists(int recipeId)
+        {
+            return await _context.Recipe.AnyAsync(g => g.RecipeId == recipeId);
         }
 
         public IActionResult Index()

@@ -68,6 +68,25 @@ namespace EventPlannerWeb.Controllers
             return Ok();
         }
 
+        [HttpPut]
+        public async Task<ActionResult> UpdateIngredient(Ingredient ingredient)
+        {
+            if (ingredient.IngredientId == default || !IngredientExists(ingredient.IngredientId))
+                return NotFound();
+
+            if (!ModelState.IsValid)
+                return BadRequest();
+
+            _context.Ingredient.Update(ingredient);
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+
+        private bool IngredientExists(int id)
+        {
+            return _context.Ingredient.Any(e => e.IngredientId == id);
+        }
+
 
         public IActionResult Index()
         {

@@ -62,6 +62,25 @@ namespace EventPlannerWeb.Controllers
             return Ok();
         }
 
+        [HttpPut]
+        public async Task<ActionResult> UpdateGuest(Guest guest)
+        {
+            if (guest.GuestId == default || !GuestExists(guest.GuestId))
+                return NotFound();
+
+            if (!ModelState.IsValid)
+                return BadRequest();
+
+            _context.Guest.Update(guest);
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+
+        private bool GuestExists(int id)
+        {
+            return _context.Guest.Any(e => e.GuestId == id);
+        }
+
         private IEnumerable<string> GetModelValidationErrors()
         {
             return ModelState.Values.SelectMany(v => v.Errors)
@@ -69,4 +88,3 @@ namespace EventPlannerWeb.Controllers
         }
     }
 }
-

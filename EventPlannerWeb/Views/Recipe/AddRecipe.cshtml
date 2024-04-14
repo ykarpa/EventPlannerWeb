@@ -90,7 +90,7 @@
     <div class="container">
         <div class="card">
             <h1>Додати рецепт</h1>
-            <form method="post" action="@Url.Action("AddRecipe", "Recipe")" enctype="multipart/form-data">
+            <form method="post" asp-action="AddRecipe" enctype="multipart/form-data">
                 <div class="form-group">
                     <label for="name">Назва:</label>
                     <input type="text" id="name" name="Name" class="form-control" required>
@@ -121,7 +121,7 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <button type="submit" class="btn btn-primary">Додати</button>
+                    <button type="submit" value="Save" class="btn btn-primary">Додати</button>
                 </div>
             </form>
             <a href="@Url.Action("RecipeList", "Recipe")" class="back-to-list">Назад до списку</a>

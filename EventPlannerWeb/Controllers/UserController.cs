@@ -56,6 +56,23 @@ namespace EventPlannerWeb.Controllers
             return Ok();
         }
 
+        public async Task<ActionResult> UpdateUser(User user)
+        {
+            if (user.UserId == default || !UserExists(user.UserId))
+                return NotFound();
+
+            if (!ModelState.IsValid)
+                return BadRequest();
+
+            _context.User.Update(user);
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+
+        private bool UserExists(int id)
+        {
+            return _context.User.Any(e => e.UserId == id);
+        }
 
         public IActionResult Index()
         {

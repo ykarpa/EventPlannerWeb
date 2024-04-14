@@ -6,8 +6,8 @@ namespace EventPlannerWeb.DTO
     {
         public Event Event { get; set; }
 
-        public List<Guest> Guests { get; set; }
+        public List<int> Guests { get; set; }
 
-        public List<Recipe> Recipes { get; set; }
+        public List<int> Recipes { get; set; }
     }
 }
