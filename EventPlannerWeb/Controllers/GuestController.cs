@@ -1,4 +1,5 @@
 ﻿using EventPlannerWeb.Data;
+using EventPlannerWeb.DTO;
 using EventPlannerWeb.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -75,6 +76,20 @@ namespace EventPlannerWeb.Controllers
 
             return Ok();
         }
+
+        [HttpGet("UpdateGuest/{id}")]
+        public async Task<IActionResult> UpdateGuestPage(int id)
+        {
+            var guest = await _context.Guest.FindAsync(id);
+            if (guest == null)
+            {
+                return NotFound();
+            }
+
+
+            return View("UpdateGuest", guest);
+        }
+
 
         [HttpPut]
         public async Task<ActionResult> UpdateGuest(Guest guest)

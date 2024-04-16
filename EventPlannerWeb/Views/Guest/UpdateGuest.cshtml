@@ -1,0 +1,145 @@
+﻿@model EventPlannerWeb.Models.Guest
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Редагування інформації про гостя: @Model.Name @Model.Surname</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin-top: 50px;
+            background-color: #f7f7f7;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 400px;
+        }
+
+        .card h1 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .card label {
+            display: block;
+            margin-top: 10px;
+        }
+
+        .card input[type="text"],
+        .card textarea {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .card button {
+            display: block;
+            width: 100%;
+            padding: 10px 0;
+            margin-top: 20px;
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .card button:hover {
+            background-color: #2980b9;
+        }
+
+        .back-to-list {
+            display: block;
+            margin-top: 20px;
+            text-align: center;
+            text-decoration: none;
+            color: #3498db;
+        }
+
+        .back-to-list:hover {
+            color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Редагування інформації про гостя: @Model.Name @Model.Surname</h1>
+        <form id="updateForm">
+             <input type="hidden" id="userId" value="@Model.UserId" />
+            <input type="hidden" id="guestId" value="@Model.GuestId" />
+
+            <label for="name">Ім'я:</label>
+            <input type="text" id="name" value="@Model.Name" />
+            <span id="nameValidation"></span>
+
+            <label for="surname">Прізвище:</label>
+            <input type="text" id="surname" value="@Model.Surname" />
+            <span id="surnameValidation"></span>
+
+            <label for="gender">Стать:</label>
+            <input type="text" id="gender" value="@Model.Gender" />
+            <span id="genderValidation"></span>
+
+
+            <button type="button" onclick="updateGuest()">Зберегти зміни</button>
+        </form>
+
+        <a href="@Url.Action("GuestList", "Guest")" class="back-to-list">Назад до списку</a>
+    </div>
+
+    <script>
+        async function updateGuest() {
+            const guestId = document.getElementById("guestId").value;
+            const userId = document.getElementById("userId").value;
+            const name = document.getElementById("name").value;
+            const surname = document.getElementById("surname").value;
+            const gender = document.getElementById("gender").value;
+            console.log(gender)
+
+            const data = {
+                guest_id: guestId,
+                Name: name,
+                Surname: surname,
+                Gender: gender,
+                UserId: userId
+            };
+
+            try {
+                const response = await fetch('/api/Guest', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    // Обробка успішної відповіді
+                    alert('Інформацію про гостя успішно оновлено!');
+                } else {
+                    // Обробка помилки
+                    alert('Помилка при оновленні інформації про гостя');
+                }
+            } catch (error) {
+                console.error('Виникла помилка:', error);
+                alert('Виникла помилка при відправці запиту');
+            }
+        }
+    </script>
+</body>
+</html>
+

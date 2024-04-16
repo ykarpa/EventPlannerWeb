@@ -122,6 +122,31 @@ namespace EventPlannerWeb.Controllers
             return Ok();
         }
 
+        [HttpGet("UpdateRecipe/{id}")]
+        public async Task<IActionResult> UpdateRecipePage(int id)
+        {
+            var recipe = await _context.Recipe.FindAsync(id);
+            if (recipe == null)
+            {
+                return NotFound();
+            }
+
+            var ingredientsQuery = from ir in _context.IngredientRecipe
+                                   where ir.RecipeId == id
+                                   select new { ir.Ingredient.Name, ir.Amount };
+
+            var ingredients = await ingredientsQuery.ToListAsync();
+
+            var model = new RecipeDTO
+            {
+                Recipe = recipe,
+                Ingredients = ingredients.Select(i => i.Name).ToList(),
+                IngredientsAmount = ingredients.Select(i => i.Amount).ToList()
+            };
+
+            return View("UpdateRecipe", model);
+        }
+
         [HttpPut]
         public async Task<ActionResult> UpdateRecipe(RecipeDTO recipeDTO)
         {

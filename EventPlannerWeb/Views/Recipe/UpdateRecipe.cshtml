@@ -1,0 +1,171 @@
+﻿@model EventPlannerWeb.DTO.RecipeDTO
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Редагування рецепту: @Model.Recipe.Name</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin-top: 50px;
+            background-color: #f7f7f7;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 400px;
+        }
+
+        .card h1 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .card label {
+            display: block;
+            margin-top: 10px;
+        }
+
+        .card input[type="text"],
+        .card textarea {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .card button {
+            display: block;
+            width: 100%;
+            padding: 10px 0;
+            margin-top: 20px;
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .card button:hover {
+            background-color: #2980b9;
+        }
+
+        .back-to-list {
+            display: block;
+            margin-top: 20px;
+            text-align: center;
+            text-decoration: none;
+            color: #3498db;
+        }
+
+        .back-to-list:hover {
+            color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Редагування рецепту: @Model.Recipe.Name</h1>
+        <form id="updateForm">
+            <input type="hidden" id="recipeId" value="@Model.Recipe.RecipeId" />
+
+            <label for="name">Назва:</label>
+            <input type="text" id="name" value="@Model.Recipe.Name" />
+            <span id="nameValidation"></span>
+
+            <label for="price">Ціна:</label>
+            <input type="text" id="price" value="@Model.Recipe.Price" />
+            <span id="priceValidation"></span>
+
+            <label for="calories">Калорії:</label>
+            <input type="text" id="calories" value="@Model.Recipe.Calories" />
+            <span id="caloriesValidation"></span>
+
+            <label for="cookingTime">Час приготування (хв):</label>
+            <input type="text" id="cookingTime" value="@Model.Recipe.CookingTime" />
+            <span id="cookingTimeValidation"></span>
+
+            <label for="description">Опис:</label>
+            <textarea id="description">@Model.Recipe.Description</textarea>
+            <span id="descriptionValidation"></span>
+
+            <!-- Додайте інші поля для решти ваших даних рецепту -->
+
+            <!-- Додайте інгредієнти з їх кількістю для редагування -->
+            @for (int i = 0; i < Model.Ingredients.Count; i++)
+            {
+                <label>Інгредієнт: @Model.Ingredients[i]</label>
+                <input type="text" id="ingredientAmount@(i+1)" value="@Model.IngredientsAmount[i]" />
+                <br />
+            }
+
+            <button type="button" onclick="updateRecipe()">Зберегти зміни</button>
+        </form>
+
+        <a href="@Url.Action("RecipeList", "Recipe")" class="back-to-list">Назад до списку</a>
+    </div>
+
+    <script>
+        async function updateRecipe() {
+const recipeId = document.getElementById("recipeId").value;
+    const name = document.getElementById("name").value;
+    const price = document.getElementById("price").value;
+    const calories = document.getElementById("calories").value;
+    const cookingTime = document.getElementById("cookingTime").value;
+    const description = document.getElementById("description").value;
+
+    const data = {
+        Recipe: {
+            RecipeId: recipeId,
+            Name: name,
+            Price: price,
+            Calories: calories,
+            CookingTime: cookingTime,
+            Description: description,
+            CreatedDate: Date.now(),
+            ModifiedDate: Date.now(),
+            RecipeImageName: ""
+        },
+        IngredientsAmount: [],
+        Ingredients: []
+    };
+
+    try {
+        const response = await fetch('/api/Recipe', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+            // Обробка успішної відповіді
+            alert('Рецепт успішно оновлено!');
+        } else {
+            // Обробка помилки
+            alert('Помилка при оновленні рецепту');
+        }
+    } catch (error) {
+        console.error('Виникла помилка:', error);
+        alert('Виникла помилка при відправці запиту');
+    }
+        }
+    </script>
+</body>
+
+
+</html>
+
