@@ -58,7 +58,7 @@ namespace EventPlannerWeb.Data
 
         public DbSet<Guest> Guest { get; set; }
 
-        public DbSet<Ingredient> Ingredient { get; set; }
+        public virtual DbSet<Ingredient> Ingredient { get; set; }
 
         public DbSet<IngredientRecipe> IngredientRecipe { get; set; }
 
