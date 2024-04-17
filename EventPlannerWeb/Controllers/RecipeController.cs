@@ -126,7 +126,7 @@ namespace EventPlannerWeb.Controllers
         public async Task<ActionResult> UpdateRecipe(RecipeDTO recipeDTO)
         {
             if (recipeDTO.Recipe.RecipeId == default || !RecipeExists(recipeDTO.Recipe.RecipeId))
-                return NotFound();
+                return BadRequest();
 
             if (!ModelState.IsValid)
                 return BadRequest();

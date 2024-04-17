@@ -19,11 +19,20 @@ namespace EventPlannerWeb.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GuestList()
+        public async Task<IActionResult> GuestListPage()
         {
             var guestList = await _context.Guest.ToListAsync();
             return View(guestList);
         }
+
+
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Guest>>> GuestList()
+        {
+            var guestList = await _context.Guest.ToListAsync();
+            return guestList;
+        }
+
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GuestPage(int id)
@@ -75,20 +84,21 @@ namespace EventPlannerWeb.Controllers
 
             return Ok();
         }
-
         [HttpPut]
         public async Task<ActionResult> UpdateGuest(Guest guest)
         {
             if (guest.GuestId == default || !GuestExists(guest.GuestId))
-                return NotFound();
+                return BadRequest();
 
             if (!ModelState.IsValid)
-                return BadRequest();
+                return BadRequest("Invalid guest model");
 
             _context.Guest.Update(guest);
             await _context.SaveChangesAsync();
             return Ok();
         }
+
+
 
         private bool GuestExists(int id)
         {
