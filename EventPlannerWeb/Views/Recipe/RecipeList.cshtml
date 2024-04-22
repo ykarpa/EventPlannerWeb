@@ -105,21 +105,49 @@
             <button class="add-recipe">Додати рецепт</button>
         </div>
         <div class="recipe-list" id="recipe-list-container">
-            @foreach (var recipe in Model)
-            {
-                <div class="recipe-list-element" data-id="@recipe.Recipe.RecipeId" onclick="openRecipeDetails(this)">
-                    <div class="recipe-name">@recipe.Recipe.Name</div>
-                    <div class="recipe-info">
-                        <div class="recipe-info-text"> @recipe.Recipe.CookingTime хв</div>
-                        <div class="recipe-info-text"> @recipe.Recipe.Price грн</div>
-                        <div class="recipe-info-text"> @recipe.Recipe.Calories ккал</div>
-                    </div>
-                </div>
-            }
+        @foreach (var recipe in Model)
+        {
+        <div class="recipe-list-element">
+            <div class="recipe-name">@recipe.Recipe.Name</div>
+            <div class="recipe-info" data-id="@recipe.Recipe.RecipeId" onclick="openRecipeDetails(this)">
+                <div class="recipe-info-text"> @recipe.Recipe.CookingTime хв</div>
+                <div class="recipe-info-text"> @recipe.Recipe.Price грн</div>
+                <div class="recipe-info-text"> @recipe.Recipe.Calories ккал</div>
+            </div>
+            <div>
+                <button class="edit-button" onclick="editRecipe(@recipe.Recipe.RecipeId)">Редагувати</button>
+                <button class="delete-button" onclick="deleteRecipe(@recipe.Recipe.RecipeId)">Видалити</button>
+            </div>
+        </div>
+        }
         </div>
     </div>
 
     <script>
+        function editRecipe(recipeId) {
+        window.location.href = 'Recipe/UpdateRecipe/' + recipeId; 
+        }
+
+        function deleteRecipe(recipeId) {
+        if (confirm('Ви впевнені, що хочете видалити цей рецепт?')) {
+            fetch('/api/Recipe/' + recipeId, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Не вдалося видалити рецепт');
+                }
+                window.location.reload();
+            })
+            .catch(error => {
+                console.error('Помилка:', error);
+            });
+        }
+        }
+
         function filterAndSortRecipes() {
             var searchQuery = document.getElementById('recipe-search-input').value.toLowerCase();
             var recipeListContainer = document.getElementById('recipe-list-container');

@@ -105,6 +105,34 @@
             padding-top: 15px;
             font-size: 20px;
         }
+
+        .edit-button {
+            background-color: #4CAF50; /* Green */
+            border: none;
+            color: white;
+            padding: 10px 24px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .delete-button {
+            background-color: #f44336; /* Red */
+            border: none;
+            color: white;
+            padding: 10px 24px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
     </style>
     <div class="guest-list-page">
         <div class="guest-list-header">Список гостей</div>
@@ -118,12 +146,16 @@
         <div class="guest-list" id="guest-list-container">
             @foreach (var guest in Model)
             {
-                <div class="guest-list-element" data-id="@guest.GuestId" onclick="openGuestDetails(this)">
-                    <div class="guest-info">
+                <div class="guest-list-element" >
+                    <div class="guest-info" data-id="@guest.GuestId" onclick="openGuestDetails(this)">
                         <div class="guest-name">@guest.Name</div>
                         <div class="guest-info-text">@guest.Surname</div>
                     </div>
                     <div class="guest-gender">@guest.Gender</div>
+                    <div>
+                        <button class="edit-button" onclick="editGuest(@guest.GuestId)">Редагувати</button>
+                        <button class="delete-button" onclick="deleteGuest(@guest.GuestId)">Видалити</button>
+                    </div>
                 </div>
             }
         </div>
@@ -132,6 +164,34 @@
 </html>
 
 <script>
+    // JavaScript functions for editing and deleting guests
+
+    function editGuest(guestId) {
+        // Redirect to the EditGuest page with the guest ID
+        window.location.href = '/api/Guest/UpdateGuest/' + guestId; // Update the URL according to your routing
+    }
+
+    function deleteGuest(guestId) {
+        if (confirm('Ви впевнені, що хочете видалити цього гостя?')) {
+            fetch('/api/Guest/' + guestId, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Не вдалося видалити гостя');
+                }
+                window.location.reload();
+            })
+            .catch(error => {
+                console.error('Помилка:', error);
+            });
+        }
+    }
+
+    // Function to filter and sort guests
     function filterAndSortGuests() {
         var searchQuery = document.getElementById('guest-search-input').value.toLowerCase();
         var guestListContainer = document.getElementById('guest-list-container');
@@ -148,14 +208,6 @@
         });
     }
 
-    function openGuestDetails(element) {
-        var guestId = element.getAttribute('data-id');
-        window.location.href = '/api/Guest/' + guestId;
-    }
-
-    // Add event listener to the search input field
-    document.getElementById('guest-search-input').addEventListener('input', filterAndSortGuests);
-
     // Function to handle the click event on the "Додати гостя" button
     function openAddGuestPage() {
         // Redirect to the AddGuest page
@@ -164,4 +216,13 @@
 
     // Add event listener to the "Додати гостя" button
     document.querySelector('.add-guest').addEventListener('click', openAddGuestPage);
+
+    // Add event listener to the search input field
+    document.getElementById('guest-search-input').addEventListener('input', filterAndSortGuests);
+
+    // Function to open guest details page
+    function openGuestDetails(element) {
+        var guestId = element.getAttribute('data-id');
+        window.location.href = '/api/Guest/' + guestId;
+    }
 </script>

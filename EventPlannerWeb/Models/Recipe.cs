@@ -24,10 +24,13 @@ namespace EventPlannerWeb.Models
         [JsonIgnore]
         public ICollection<EventRecipe>? RecipeEvents { get; set; }
 
-        public DateTime CreatedDate { get; set; }
+        [JsonIgnore]
+        public DateTime? CreatedDate { get; set; }
 
+        [JsonIgnore]
         public DateTime? ModifiedDate { get; set; }
 
+        [JsonIgnore]
         public string? RecipeImageName { get; set; }
 
         public double Price { get; set; }
