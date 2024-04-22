@@ -21,7 +21,10 @@ namespace EventPlannerWeb.Controllers
         {
             var user = await _context.User.FirstOrDefaultAsync(u => u.UserId == id);
 
-            if (user == null) return NotFound();
+            if (user == null)
+            {
+                return NotFound();
+            }
 
             return user;
         }
@@ -46,11 +49,13 @@ namespace EventPlannerWeb.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteUser(int id)
         {
-            var user = await _context.User.FirstOrDefaultAsync(e => e.UserId == id);
-            if (user == default) return NotFound();
+            var user = await _context.User.FindAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
 
             _context.User.Remove(user);
-
             await _context.SaveChangesAsync();
 
             return Ok();

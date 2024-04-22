@@ -16,7 +16,7 @@ namespace EventPlannerWeb.Controllers
 
         public EventController(EventPlannerContext context)
         {
-            _context = context;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         [HttpGet]
@@ -70,20 +70,24 @@ namespace EventPlannerWeb.Controllers
             ViewBag.Guests = guests;
 
             return View("AddEvent");
-        } 
+        }
 
         [HttpPost]
         public async Task<ActionResult> AddEvent(EventDTO evenDTO)
         {
-            //even.EventGuests
+            if (evenDTO == null || evenDTO.Event == null)
+            {
+                return BadRequest("Event data is null");
+            }
+
             if (ModelState.IsValid)
             {
                 var even = evenDTO.Event;
                 even.CreatedDate = DateTime.UtcNow;
-                await _context.Event.AddAsync(even);
+                _context.Event.Add(even); // Removed async operation because EF Core doesn't support async Add
                 await _context.SaveChangesAsync();
 
-                foreach(var guestId in evenDTO.Guests)
+                foreach (var guestId in evenDTO.Guests)
                 {
                     if (await GuestExists(guestId))
                     {
@@ -92,9 +96,10 @@ namespace EventPlannerWeb.Controllers
                     }
                     else
                     {
-                        return BadRequest("Don't exist");
+                        return BadRequest("Guest doesn't exist");
                     }
                 }
+
                 foreach (var recipeId in evenDTO.Recipes)
                 {
                     if (await RecipeExists(recipeId))
@@ -102,15 +107,23 @@ namespace EventPlannerWeb.Controllers
                         var eventRecipe = new EventRecipe { EventId = even.EventId, RecipeId = recipeId };
                         await _context.EventRecipe.AddAsync(eventRecipe);
                     }
+                    else
+                    {
+                        return BadRequest("Recipe doesn't exist");
+                    }
                 }
 
                 await _context.SaveChangesAsync();
                 return Ok();
             }
-            var message = GetModelValidationErrors();
+            else
+            {
+                var message = GetModelValidationErrors();
 
-            return BadRequest(message);
+                return BadRequest(message);
+            }
         }
+
 
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteEvent(int id)
@@ -128,11 +141,17 @@ namespace EventPlannerWeb.Controllers
         [HttpPut]
         public async Task<ActionResult> UpdateEvent(EventDTO eventDTO)
         {
-            if (eventDTO.Event.EventId == default || !EventExists(eventDTO.Event.EventId))
-                return NotFound();
+            if (eventDTO == null || eventDTO.Event == null)
+            {
+                return BadRequest("Event data is null");
+            }
+
 
             if (!ModelState.IsValid)
-                return BadRequest();
+            {
+                var message = GetModelValidationErrors();
+                return BadRequest(message);
+            }
 
             eventDTO.Event.ModifiedDate = DateTime.UtcNow;
 

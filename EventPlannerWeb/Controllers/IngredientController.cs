@@ -28,8 +28,9 @@ namespace EventPlannerWeb.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Ingredient>> IngredientPage(int id)
         {
-            var ingredient = await _context.Ingredient
-                .FirstOrDefaultAsync(e => e.IngredientId == id);
+            var ingredient = _context.Ingredient
+    .FirstOrDefault(e => e.IngredientId == id);
+
 
             if (ingredient == null) return NotFound();
 
@@ -71,11 +72,11 @@ namespace EventPlannerWeb.Controllers
         [HttpPut]
         public async Task<ActionResult> UpdateIngredient(Ingredient ingredient)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(); // Return BadRequest for invalid models
+
             if (ingredient.IngredientId == default || !IngredientExists(ingredient.IngredientId))
                 return NotFound();
-
-            if (!ModelState.IsValid)
-                return BadRequest();
 
             _context.Ingredient.Update(ingredient);
             await _context.SaveChangesAsync();
