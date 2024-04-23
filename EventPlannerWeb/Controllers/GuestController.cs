@@ -85,7 +85,7 @@ namespace EventPlannerWeb.Controllers
 
             return Ok();
         }
- tests
+
         [HttpGet("UpdateGuest/{id}")]
         public async Task<IActionResult> UpdateGuestPage(int id)
         {
@@ -100,7 +100,6 @@ namespace EventPlannerWeb.Controllers
         }
 
 
- master
         [HttpPut]
         public async Task<ActionResult> UpdateGuest(Guest guest)
         {
