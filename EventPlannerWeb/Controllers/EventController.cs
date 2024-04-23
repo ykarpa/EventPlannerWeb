@@ -20,14 +20,25 @@ namespace EventPlannerWeb.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Event>>> EventList()
+        public async Task<IActionResult> EventList()
         {
-            var even = await _context.Event.ToListAsync();
+            var events = await _context.Event
+                .Include(e => e.EventGuests)
+                .ThenInclude(eg => eg.Guest)
+                .Include(e => e.EventRecipes)
+                .ThenInclude(er => er.Recipe)
+                .ToListAsync();
 
+            var eventDTOs = events.Select(ev => new EventDTO
+            {
+                Event = ev,
+                Guests = ev.EventGuests?.Select(eg => eg.Guest.GuestId).ToList() ?? new List<int>(),
+                Recipes = ev.EventRecipes?.Select(er => er.Recipe.RecipeId).ToList() ?? new List<int>()
+            }).ToList();
 
-            return View(even);
-            //return View(eventList);
+            return View(eventDTOs);
         }
+
 
         [HttpGet("{id}")]
         public async Task<ActionResult<EventDTO>> EventPage(int id)
@@ -52,7 +63,7 @@ namespace EventPlannerWeb.Controllers
                 Guests = eventWithGuestsAndRecipes.EventGuests?.Select(eg => eg.Guest.GuestId).ToList() ?? new List<int>()
             };
 
-            return eventDTO;
+            return View(eventDTO);
         }
 
 

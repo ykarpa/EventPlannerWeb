@@ -89,5 +89,18 @@ namespace EventPlannerWeb.Controllers
             return ModelState.Values.SelectMany(v => v.Errors)
                 .Select(v => v.ErrorMessage);
         }
+
+        [HttpGet("login")]
+        public IActionResult Login()
+        {
+            return View("Login");
+        }
+
+
+        [HttpGet("register")]
+        public IActionResult Register()
+        {
+            return View("Register");
+        }
     }
 }

@@ -1,4 +1,4 @@
-﻿@model EventPlannerWeb.Models.Event
+﻿@model EventPlannerWeb.DTO.EventDTO
 
 @{
     ViewData["Title"] = "Event Details";
@@ -64,9 +64,9 @@
 <body>
     <div class="container">
         <div class="card">
-            <h1>@Model.Name</h1>
-            <p class="price">Ціна: @Model.Price.ToString("C2")</p>
-            <p>Дата івенту: @Model.CreatedDate.ToString("MMMM dd, yyyy")</p>
+            <h1>@Model.Event.Name</h1>
+            <p class="price">Ціна: @Model.Event.Price.ToString("C2")</p>
+            <p>Дата івенту: @Model.Event.CreatedDate.ToString("MMMM dd, yyyy")</p>
             <a href="@Url.Action("EventList", "Event")" class="back-to-list">Назад до списку</a>
         </div>
     </div>

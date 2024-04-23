@@ -1,0 +1,159 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Реєстрація</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin-top: 50px;
+            background-color: #f7f7f7;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 400px;
+        }
+
+            .card h1 {
+                color: #333;
+                font-size: 24px;
+                margin-bottom: 10px;
+            }
+
+            .card label {
+                display: block;
+                margin-top: 10px;
+            }
+
+            .card input[type="text"],
+            .card input[type="password"] {
+                width: calc(100% - 20px);
+                padding: 10px;
+                margin-top: 5px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                box-sizing: border-box;
+            }
+
+            .card select {
+                width: calc(100% - 20px);
+                padding: 10px;
+                margin-top: 5px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                box-sizing: border-box;
+            }
+
+            .card button {
+                display: block;
+                width: 100%;
+                padding: 10px 0;
+                margin-top: 20px;
+                background-color: #3498db;
+                color: #fff;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+
+                .card button:hover {
+                    background-color: #2980b9;
+                }
+
+        .login-link {
+            display: block;
+            margin-top: 20px;
+            text-align: center;
+            text-decoration: none;
+            color: #3498db;
+        }
+
+            .login-link:hover {
+                color: #2980b9;
+            }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Реєстрація</h1>
+        <form id="registerForm">
+            <label for="name">Ім'я:</label>
+            <input type="text" id="name" placeholder="Введіть ваше ім'я" />
+
+            <label for="surname">Прізвище:</label>
+            <input type="text" id="surname" placeholder="Введіть ваше прізвище" />
+
+            <label for="email">Електронна пошта:</label>
+            <input type="text" id="email" placeholder="Введіть вашу електронну пошту" />
+
+            <label for="phone">Телефон:</label>
+            <input type="text" id="phone" placeholder="Введіть ваш номер телефону" />
+
+            <label for="gender">Стать:</label>
+            <select id="gender">
+                <option value="Male">Чоловік</option>
+                <option value="Female">Жінка</option>
+                <option value="Other">Інше</option>
+            </select>
+
+            <label for="password">Пароль:</label>
+            <input type="password" id="password" placeholder="Введіть ваш пароль" />
+
+            <button type="button" onclick="register()">Зареєструватися</button>
+        </form>
+
+        <a href="user/login" class="login-link">Увійти</a>
+    </div>
+
+    <script>
+        async function register() {
+            const name = document.getElementById("name").value;
+            const surname = document.getElementById("surname").value;
+            const email = document.getElementById("email").value;
+            const phone = document.getElementById("phone").value;
+            const gender = document.getElementById("gender").value;
+            const password = document.getElementById("password").value;
+
+            const data = {
+                Name: name,
+                Surname: surname,
+                Email: email,
+                PhoneNumber: phone,
+                Gender: gender,
+                Password: password
+            };
+
+            try {
+                const response = await fetch('/api/User', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    // Обробка успішної відповіді
+                    alert('Реєстрація успішна!');
+                } else {
+                    // Обробка помилки
+                    alert('Помилка реєстрації');
+                }
+            } catch (error) {
+                console.error('Виникла помилка:', error);
+                alert('Виникла помилка при відправці запиту');
+            }
+        }
+    </script>
+</body>
+</html>
+

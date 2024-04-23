@@ -103,6 +103,34 @@
             padding-top: 15px;
             font-size: 20px;
         }
+
+        .edit-button {
+            background-color: #4CAF50; /* Green */
+            border: none;
+            color: white;
+            padding: 10px 24px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .delete-button {
+            background-color: #f44336; /* Red */
+            border: none;
+            color: white;
+            padding: 10px 24px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
     </style>
     <div class="event-list-page">
     <div class="event-list-header">Список подій</div>
@@ -114,23 +142,51 @@
         <button class="add-event">Додати подію</button>
     </div>
     <div class="event-list" id="event-list-container">
-        @foreach (var event_ in Model)
-        {
-<div class="event-list-element" data-id="@event_.Event.EventId" onclick="openEventDetails(this)">
-            <div class="event-info">
-            <div class="event-name">@event_.Event.Name</div>
-            <div class="event-info-text"> @event_.Event.Price грн</div>
-            </div>
-            <div class="event-date"> @event_.Event.CreatedDate</div>
+            @foreach (var event_ in Model)
+            {
+                <div class="event-list-element" >
+                    <div class="event-info" data-id="@event_.Event.EventId" onclick="openEventDetails(this)">
+                        <div class="event-name">@event_.Event.Name</div>
+                        <div class="event-info-text">@event_.Event.Price грн</div>
+                    </div>
+                    <div class="event-date">@event_.Event.CreatedDate</div>
+                    <div>
+                        <button class="edit-button" onclick="editEvent(@event_.Event.EventId)">Редагувати</button>
+                        <button class="delete-button" onclick="deleteEvent(@event_.Event.EventId)">Видалити</button>
+                    </div>
+                </div>
+            }
 
-        </div> 
-        }
     </div>
 </div>
 </body>
 </html>
 
 <script>
+    function editEvent(eventId) {
+        window.location.href = '/api/Event/UpdateEvent/' + eventId; 
+    }
+
+    function deleteEvent(eventId) {
+        if (confirm('Ви впевнені, що хочете видалити цю подію?')) {
+            fetch('/api/Event/' + eventId, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Не вдалося видалити подію');
+                    }
+                    window.location.reload();
+                })
+                .catch(error => {
+                    console.error('Помилка:', error);
+                });
+        }
+    }
+
     function filterAndSortEvents() {
         var searchQuery = document.getElementById('event-search-input').value.toLowerCase();
         var recipeListContainer = document.getElementById('event-list-container');

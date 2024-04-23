@@ -20,18 +20,10 @@ namespace EventPlannerWeb.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GuestListPage()
+        public async Task<IActionResult> GuestList()
         {
             var guestList = await _context.Guest.ToListAsync();
             return View(guestList);
-        }
-
-
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Guest>>> GuestList()
-        {
-            var guestList = await _context.Guest.ToListAsync();
-            return guestList;
         }
 
 

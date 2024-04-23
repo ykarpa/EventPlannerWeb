@@ -1,11 +1,9 @@
-﻿@model EventPlannerWeb.Models.Guest
-
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Редагування інформації про гостя: @Model.Name @Model.Surname</title>
+    <title>Вхід в систему</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -37,7 +35,7 @@
         }
 
         .card input[type="text"],
-        .card textarea {
+        .card input[type="password"] {
             width: calc(100% - 20px);
             padding: 10px;
             margin-top: 5px;
@@ -62,7 +60,7 @@
             background-color: #2980b9;
         }
 
-        .back-to-list {
+        .register-link {
             display: block;
             margin-top: 20px;
             text-align: center;
@@ -70,57 +68,40 @@
             color: #3498db;
         }
 
-        .back-to-list:hover {
+        .register-link:hover {
             color: #2980b9;
         }
     </style>
 </head>
 <body>
     <div class="card">
-        <h1>Редагування інформації про гостя: @Model.Name @Model.Surname</h1>
-        <form id="updateForm">
-             <input type="hidden" id="userId" value="@Model.UserId" />
-            <input type="hidden" id="guestId" value="@Model.GuestId" />
+        <h1>Вхід в систему</h1>
+        <form id="loginForm">
+            <label for="email">Електронна пошта:</label>
+            <input type="text" id="email" placeholder="Введіть вашу електронну пошту" />
 
-            <label for="name">Ім'я:</label>
-            <input type="text" id="name" value="@Model.Name" />
-            <span id="nameValidation"></span>
+            <label for="password">Пароль:</label>
+            <input type="password" id="password" placeholder="Введіть ваш пароль" />
 
-            <label for="surname">Прізвище:</label>
-            <input type="text" id="surname" value="@Model.Surname" />
-            <span id="surnameValidation"></span>
-
-            <label for="gender">Стать:</label>
-            <input type="text" id="gender" value="@Model.Gender" />
-            <span id="genderValidation"></span>
-
-
-            <button type="button" onclick="updateGuest()">Зберегти зміни</button>
+            <button type="button" onclick="login()">Увійти</button>
         </form>
 
-        <a href="@Url.Action("GuestList", "Guest")" class="back-to-list">Назад до списку</a>
+        <a href="register" class="register-link">Зареєструватися</a>
     </div>
 
     <script>
-        async function updateGuest() {
-            const guestId = document.getElementById("guestId").value;
-            const userId = document.getElementById("userId").value;
-            const name = document.getElementById("name").value;
-            const surname = document.getElementById("surname").value;
-            const gender = document.getElementById("gender").value;
-            console.log(gender)
+        async function login() {
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
 
             const data = {
-                guestId: guestId,
-                Name: name,
-                Surname: surname,
-                Gender: 0,
-                UserId: 2
+                Email: email,
+                Password: password
             };
 
             try {
-                const response = await fetch('/api/Guest', {
-                    method: 'PUT',
+                const response = await fetch('/api/Login', {
+                    method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
@@ -129,10 +110,10 @@
 
                 if (response.ok) {
                     // Обробка успішної відповіді
-                    alert('Інформацію про гостя успішно оновлено!');
+                    alert('Успішний вхід!');
                 } else {
                     // Обробка помилки
-                    alert('Помилка при оновленні інформації про гостя');
+                    alert('Помилка входу');
                 }
             } catch (error) {
                 console.error('Виникла помилка:', error);
