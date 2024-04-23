@@ -30,28 +30,31 @@ namespace EventPlannerWeb.Controllers
         }
 
         [HttpGet("{id}")]
-        //public async Task<IActionResult> EventPage(int id)
         public async Task<ActionResult<EventDTO>> EventPage(int id)
         {
             var eventWithGuestsAndRecipes = await _context.Event
                 .Where(e => e.EventId == id)
-               .Include(e => e.EventGuests)
-               .ThenInclude(e => e.Guest)
-               .Include(e => e.EventRecipes)
-               .ThenInclude(e => e.Recipe)
+                .Include(e => e.EventGuests)
+                .ThenInclude(e => e.Guest)
+                .Include(e => e.EventRecipes)
+                .ThenInclude(e => e.Recipe)
                 .FirstOrDefaultAsync();
+
+            if (eventWithGuestsAndRecipes == null)
+            {
+                return NotFound(); // Return 404 Not Found if event is not found
+            }
 
             var eventDTO = new EventDTO
             {
                 Event = eventWithGuestsAndRecipes,
-                Recipes = eventWithGuestsAndRecipes.EventRecipes.Select(er => er.Recipe.RecipeId).ToList(),
-                Guests = eventWithGuestsAndRecipes.EventGuests.Select(eg => eg.Guest.GuestId).ToList()
+                Recipes = eventWithGuestsAndRecipes.EventRecipes?.Select(er => er.Recipe.RecipeId).ToList() ?? new List<int>(),
+                Guests = eventWithGuestsAndRecipes.EventGuests?.Select(eg => eg.Guest.GuestId).ToList() ?? new List<int>()
             };
 
             return eventDTO;
-
-            //return View("EventPage", even); 
         }
+
 
 
         [HttpGet("AddEvent")]
@@ -124,19 +127,25 @@ namespace EventPlannerWeb.Controllers
             }
         }
 
-
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteEvent(int id)
         {
             var even = await _context.Event.FirstOrDefaultAsync(e => e.EventId == id);
             if (even == default) return NotFound();
 
-            _context.Event.Remove(even);
-
-            await _context.SaveChangesAsync();
-
-            return Ok();
+            try
+            {
+                _context.Event.Remove(even);
+                await _context.SaveChangesAsync();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it accordingly
+                return StatusCode(500, $"An error occurred while deleting the event: {ex.Message}");
+            }
         }
+
 
         [HttpPut]
         public async Task<ActionResult> UpdateEvent(EventDTO eventDTO)

@@ -16,6 +16,15 @@ namespace Tests
 {
     public class IngredientControllerTests
     {
+        private readonly DbContextOptions<EventPlannerContext> _options;
+
+        public IngredientControllerTests()
+        {
+            _options = new DbContextOptionsBuilder<EventPlannerContext>()
+                .UseInMemoryDatabase(databaseName: "Test_EventPlannerDB")
+                .Options;
+        }
+
         [Fact]
         public async Task IngredientList_ReturnsListOfIngredients()
         {
@@ -90,10 +99,74 @@ namespace Tests
             Assert.IsType<BadRequestResult>(result);
         }
 
+        [Fact]
+        public async Task DeleteIngredient_ReturnsNotFound_WhenGuestNotFound()
+        {
+            // Arrange
+            using (var context = new EventPlannerContext(_options))
+            {
+                // Initialize database with test data
+                context.Ingredient.Add(new Ingredient { Name = "name", Price = 10 });
+                await context.SaveChangesAsync();
+            }
+
+            using (var context = new EventPlannerContext(_options))
+            {
+                var controller = new IngredientController(context);
+
+                // Act
+                var result = await controller.DeleteIngredient(2); // Assuming ingredient with ID 2 doesn't exist
+
+                // Assert
+                Assert.IsType<NotFoundResult>(result);
+            }
+        }
+
+        [Fact]
+        public async Task DeleteIngredient_ReturnsOkResult_WhenIngredientDeleted()
+        {
+            // Arrange
+            using (var context = new EventPlannerContext(_options))
+            {
+                // Initialize database with test data
+                var ingrData = new Ingredient { IngredientId = 5, Name = "test", Price = 10 };
+                context.Ingredient.Add(ingrData);
+                await context.SaveChangesAsync();
+            }
+
+            using (var context = new EventPlannerContext(_options))
+            {
+                var controller = new IngredientController(context);
+
+                // Act
+                var result = await controller.DeleteIngredient(5);
+
+                // Assert
+                var okResult = Assert.IsType<OkResult>(result);
+                Assert.Equal(200, okResult.StatusCode);
+            }
+        }
 
 
+        [Fact]
+        public async Task IngredientPage_ReturnsNotFound_WhenIngredientNotFound()
+        {
+            // Arrange
+            var nonExistingIngredientId = 999; // ID of a non-existing ingredient
 
-        // Similarly, you can write tests for other actions
+            using (var context = new EventPlannerContext(_options))
+            {
+
+                var controller = new IngredientController(context);
+
+                // Act
+                var result = await controller.IngredientPage(nonExistingIngredientId);
+
+                // Assert
+                var notFoundResult = Assert.IsType<NotFoundResult>(result.Result);
+                Assert.Equal(404, notFoundResult.StatusCode);
+            }
+        }
     }
 
     // TestAsyncEnumerator and TestAsyncQueryProvider classes for mocking asynchronous operations

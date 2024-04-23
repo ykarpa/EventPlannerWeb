@@ -16,6 +16,19 @@ namespace Tests
 {
     public class EventControllerTests
     {
+        private readonly DbContextOptions<EventPlannerContext> _options;
+        private readonly DbContextOptions<EventPlannerContext> _optionsnew;
+
+        public EventControllerTests()
+        {
+            _options = new DbContextOptionsBuilder<EventPlannerContext>()
+                .UseInMemoryDatabase(databaseName: "Test_EventPlannerDB")
+                .Options;
+            _optionsnew = new DbContextOptionsBuilder<EventPlannerContext>()
+                .UseInMemoryDatabase(databaseName: "Test_EventPlanner")
+                .Options;
+        }
+
         [Fact]
         public async Task EventPage_ReturnsEventDTO()
         {
@@ -56,59 +69,53 @@ namespace Tests
             Assert.Equal("Event data is null", errorMessage);
         }
 
+        [Fact]
+        public async Task DeleteEvent_ReturnsNotFound_WhenEventNotFound()
+        {
+            // Arrange
+            using (var context = new EventPlannerContext(_options))
+            {
+                // Initialize database with test data
+                context.Event.Add(new Event { EventId = 1, Name = "Test Event" });
+                await context.SaveChangesAsync();
+            }
 
+            using (var context = new EventPlannerContext(_options))
+            {
+                var controller = new EventController(context);
 
-        //[Fact]
-        //public async Task DeleteEvent_ReturnsOkResult_WhenEventExists()
-        //{
-        //    // Arrange
-        //    var options = new DbContextOptionsBuilder<EventPlannerContext>()
-        //        .UseInMemoryDatabase(databaseName: "EventPlannerTest")
-        //        .Options;
+                // Act
+                var result = await controller.DeleteEvent(2); // Assuming event with ID 2 doesn't exist
+                var del = await controller.DeleteEvent(1);
 
-        //    // Initialize the DbContext with test data
-        //    using (var context = new EventPlannerContext(options))
-        //    {
-        //        context.Event.Add(new Event { EventId = 1, Name = "Test Event" });
-        //        await context.SaveChangesAsync();
-        //    }
+                // Assert
+                Assert.IsType<NotFoundResult>(result);
+            }
+        }
+        [Fact]
+        public async Task DeleteEvent_ReturnsOkResult_WhenEventDeleted()
+        {
+            // Arrange
+            using (var context = new EventPlannerContext(_options))
+            {
+                // Initialize database with test data
+                var eventData = new Event { EventId = 5, Name = "Test5 Event" };
+                context.Event.Add(eventData);
+                await context.SaveChangesAsync();
+            }
 
-        //    // Mock the Event DbSet
-        //    var mockSet = new Mock<DbSet<Event>>();
-        //    mockSet.Setup(m => m.FindAsync(It.IsAny<int>())).ReturnsAsync((int id) =>
-        //    {
-        //        using (var innerContext = new EventPlannerContext(options))
-        //        {
-        //            return innerContext.Event.FirstOrDefaultAsync(e => e.EventId == id);
-        //        }
-        //    });
-        //    mockSet.Setup(m => m.Remove(It.IsAny<Event>())).Callback<Event>((entity) =>
-        //    {
-        //        using (var innerContext = new EventPlannerContext(options))
-        //        {
-        //            innerContext.Event.Remove(entity);
-        //            innerContext.SaveChanges();
-        //        }
-        //    });
+            using (var context = new EventPlannerContext(_options))
+            {
+                var controller = new EventController(context);
 
-        //    // Mock the EventPlannerContext to return the mock DbSet
-        //    var mockContext = new Mock<EventPlannerContext>(options);
-        //    mockContext.Setup(c => c.Event).Returns(mockSet.Object);
+                // Act
+                var result = await controller.DeleteEvent(5);
 
-        //    // Create the controller with the mocked context
-        //    var controller = new EventController(mockContext.Object);
-
-        //    // Act
-        //    var result = await controller.DeleteEvent(1);
-
-        //    // Assert
-        //    var okResult = Assert.IsType<OkResult>(result);
-        //    Assert.Equal(200, okResult.StatusCode);
-        //}
-
-
-
-
+                // Assert
+                var okResult = Assert.IsType<OkResult>(result);
+                Assert.Equal(200, okResult.StatusCode);
+            }
+        }
 
         [Fact]
         public async Task UpdateEvent_InvalidModel_ReturnsBadRequest()
@@ -126,6 +133,86 @@ namespace Tests
             // Assert
             Assert.IsAssignableFrom<BadRequestObjectResult>(result);
         }
+
+        [Fact]
+        public async Task EventList_ReturnsViewWithCorrectModel()
+        {
+            // Arrange
+            var expectedEvents = new List<Event>
+            {
+                new Event { EventId = 11, Name = "Event 11" },
+                new Event { EventId = 12, Name = "Event 12" },
+                new Event { EventId = 13, Name = "Event 13" }
+            };
+
+            using (var context = new EventPlannerContext(_options))
+            {
+                // Initialize database with test data
+                context.Event.AddRange(expectedEvents);
+                await context.SaveChangesAsync();
+            }
+
+            using (var context = new EventPlannerContext(_options))
+            {
+                var controller = new EventController(context);
+
+                // Act
+                var result = await controller.EventList();
+
+                // Assert
+                var actionResult = Assert.IsType<ActionResult<IEnumerable<Event>>>(result);
+                var viewResult = Assert.IsAssignableFrom<ViewResult>(actionResult.Result);
+                var model = Assert.IsAssignableFrom<IEnumerable<Event>>(viewResult.ViewData.Model);
+
+                // Assert that the model contains the expected events
+                Assert.Equal(expectedEvents.Select(e => e.EventId), model.Select(e => e.EventId));
+            }
+        }
+        [Fact]
+        public async Task EventPage_ReturnsNotFound_WhenEventNotFound()
+        {
+            // Arrange
+            var nonExistingEventId = 999; // ID of a non-existing event
+
+            using (var context = new EventPlannerContext(_optionsnew))
+            {
+                // Act
+                var controller = new EventController(context);
+                var result = await controller.EventPage(nonExistingEventId);
+
+                // Assert
+                var notFoundResult = Assert.IsType<NotFoundResult>(result.Result);
+                Assert.Equal(404, notFoundResult.StatusCode);
+            }
+        }
+
+
+        [Fact]
+        public async Task AddEventPage_ReturnsViewWithEmptyRecipesAndGuests_WhenNoRecipesOrGuestsExist()
+        {
+            // Arrange
+            using (var context = new EventPlannerContext(_optionsnew))
+            {
+                // Ensure there are no recipes or guests in the database
+                var controller = new EventController(context);
+
+                // Act
+                var result = await controller.AddEventPage();
+
+                // Assert
+                var viewResult = Assert.IsType<ViewResult>(result);
+                var recipes = viewResult.ViewData["Recipes"] as IEnumerable<SelectListItem>;
+                var guests = viewResult.ViewData["Guests"] as IEnumerable<SelectListItem>;
+                Assert.Empty(recipes); // Assert that recipes ViewData is empty
+                Assert.Empty(guests); // Assert that guests ViewData is empty
+            }
+        }
+
+
+
+
+
+
 
 
 

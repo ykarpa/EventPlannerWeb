@@ -36,7 +36,7 @@ namespace EventPlannerWeb.Controllers
             return View("RecipePage", rec);
         }
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Recipe>>> RecipeList()
+        public async Task<IActionResult> RecipeList()
         {
             var recipeDTOs = await _context.Recipe
                 .Include(r => r.IngredientsRecipe)
@@ -47,8 +47,10 @@ namespace EventPlannerWeb.Controllers
                     Ingredients = r.IngredientsRecipe.Select(ir => ir.Ingredient.Name).ToList(),
                     IngredientsAmount = r.IngredientsRecipe.Select(ir => ir.Amount).ToList(),
                 }).ToListAsync();
-            return View(recipeDTOs);
+
+            return View("RecipeList", recipeDTOs); // Specify the view name and pass the model
         }
+
 
         //[HttpGet]
         //public async Task<ActionResult<RecipeDTO>> GetRecipe(int id)

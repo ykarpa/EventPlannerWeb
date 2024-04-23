@@ -13,97 +13,14 @@ namespace Tests
 {
     public class UserControllerTests
     {
-        //[Fact]
-        //public async Task GetUser_ReturnsNotFound_WhenUserNotFound()
-        //{
-        //    // Arrange
-        //    var options = new DbContextOptionsBuilder<EventPlannerContext>()
-        //        .UseInMemoryDatabase(databaseName: "EventPlannerTest")
-        //        .Options;
-        //    using (var context = new EventPlannerContext(options))
-        //    {
-        //        context.User.Add(new User { UserId = 1, Name = "Test User" });
-        //        context.SaveChanges();
-        //    }
+        private readonly DbContextOptions<EventPlannerContext> _options;
 
-        //    var mockContext = new Mock<EventPlannerContext>(options);
-        //    var controller = new UserController(mockContext.Object);
-
-        //    // Act
-        //    var result = await controller.GetUser(2);
-
-        //    // Assert
-        //    Assert.IsType<NotFoundResult>(result.Result);
-        //}
-
-        //[Fact]
-        //public async Task AddUser_ReturnsOkResult_WhenModelStateIsValid()
-        //{
-        //    // Arrange
-        //    var options = new DbContextOptionsBuilder<EventPlannerContext>()
-        //        .UseInMemoryDatabase(databaseName: "EventPlannerTest")
-        //        .Options;
-        //    using (var context = new EventPlannerContext(options))
-        //    {
-        //        var user1 = new User
-        //        {
-        //            UserId = 1,
-        //            Name = "Test User",
-        //            Email = "test@example.com", // Provide values for required properties
-        //            Gender = (Gender)1,
-        //            Password = "password",
-        //            PhoneNumber = "1234567890",
-        //            Surname = "TestSurname"
-        //        };
-        //        context.User.Add(user1);
-        //        context.SaveChanges();
-        //    }
-
-        //    var mockContext = new Mock<EventPlannerContext>(options);
-        //    var controller = new UserController(mockContext.Object);
-
-        //    // Act
-        //    var user = new User
-        //    {
-        //        UserId = 2,
-        //        Name = "Another Test User",
-        //        Email = "test2@example.com", // Provide values for required properties
-        //        Gender = (Gender)2,
-        //        Password = "password",
-        //        PhoneNumber = "0987654321",
-        //        Surname = "AnotherSurname"
-        //    };
-        //    var result = await controller.AddUser(user);
-
-        //    // Assert
-        //    var okResult = Assert.IsType<OkResult>(result);
-        //    Assert.Equal(200, okResult.StatusCode);
-        //}
-
-
-        //[Fact]
-        //public async Task DeleteUser_ReturnsOkResult_WhenUserExists()
-        //{
-        //    // Arrange
-        //    var options = new DbContextOptionsBuilder<EventPlannerContext>()
-        //        .UseInMemoryDatabase(databaseName: "EventPlannerTest")
-        //        .Options;
-        //    using (var context = new EventPlannerContext(options))
-        //    {
-        //        context.User.Add(new User { UserId = 1, Name = "Test User" });
-        //        context.SaveChanges();
-        //    }
-
-        //    var mockContext = new Mock<EventPlannerContext>(options);
-        //    var controller = new UserController(mockContext.Object);
-
-        //    // Act
-        //    var result = await controller.DeleteUser(1);
-
-        //    // Assert
-        //    var okResult = Assert.IsType<OkResult>(result);
-        //    Assert.Equal(200, okResult.StatusCode);
-        //}
+        public UserControllerTests()
+        {
+            _options = new DbContextOptionsBuilder<EventPlannerContext>()
+                .UseInMemoryDatabase(databaseName: "Test_EventPlannerDB")
+                .Options;
+        }
 
         [Fact]
         public async Task UpdateUser_ReturnsNotFound_WhenUserDoesNotExist()
@@ -141,44 +58,70 @@ namespace Tests
             Assert.Contains("The Username field is required.", errorMessage);
         }
 
-        //[Fact]
-        //public async Task GetUser_NonExistingUser_ReturnsNotFound()
-        //{
-        //    // Arrange
-        //    int nonExistingUserId = 999; // ID of a user that doesn't exist
+        [Fact]
+        public async Task DeleteUser_ReturnsNotFound_WhenUserNotFound()
+        {
+            // Arrange
+            using (var context = new EventPlannerContext(_options))
+            {
+                // Initialize database with test data
+                context.User.Add(new User { UserId = 1, Name = "Test user", Surname = "Test", Email = "test@example.com", Gender = Gender.Male, Password = "123567890", PhoneNumber="0675629289" });
+                await context.SaveChangesAsync();
+            }
 
-        //    var mockContext = new Mock<EventPlannerContext>(new DbContextOptions<EventPlannerContext>());
-        //    var controller = new UserController(mockContext.Object);
+            using (var context = new EventPlannerContext(_options))
+            {
+                var controller = new UserController(context);
 
-        //    // Act
-        //    var result = await controller.GetUser(nonExistingUserId);
+                // Act
+                var result = await controller.DeleteUser(2); // Assuming guest with ID 2 doesn't exist
 
-        //    // Assert
-        //    Assert.IsType<NotFoundResult>(result.Result);
-        //}
+                // Assert
+                Assert.IsType<NotFoundResult>(result);
+            }
+        }
 
-        //    [Fact]
-        //    public async Task UpdateUser_ReturnsBadRequest_WhenModelStateIsInvalid()
-        //    {
-        //        // Arrange
-        //        var options = new DbContextOptionsBuilder<EventPlannerContext>()
-        //            .UseInMemoryDatabase(databaseName: "EventPlannerTest")
-        //            .Options;
-        //        using (var context = new EventPlannerContext(options))
-        //        {
-        //            context.User.Add(new User { UserId = 1, Name = "Test User" });
-        //            context.SaveChanges();
-        //        }
+        [Fact]
+        public async Task DeleteUser_ReturnsOkResult_WhenUserDeleted()
+        {
+            // Arrange
+            using (var context = new EventPlannerContext(_options))
+            {
+                // Initialize database with test data
+                var userData = new User { UserId = 5, Name = "Test user", Surname = "Test", Email = "test@example.com", Gender = Gender.Male, Password = "123567890", PhoneNumber = "0675629289" };
+                context.User.Add(userData);
+                await context.SaveChangesAsync();
+            }
 
-        //        var mockContext = new Mock<EventPlannerContext>(options);
-        //        var controller = new UserController(mockContext.Object);
+            using (var context = new EventPlannerContext(_options))
+            {
+                var controller = new UserController(context);
 
-        //        // Act
-        //        var user = new User { UserId = 1, Name = "" }; // Invalid model state
-        //        var result = await controller.UpdateUser(user);
+                // Act
+                var result = await controller.DeleteUser(5);
 
-        //        // Assert
-        //        Assert.IsType<BadRequestResult>(result);
-        //    }
+                // Assert
+                var okResult = Assert.IsType<OkResult>(result);
+                Assert.Equal(200, okResult.StatusCode);
+            }
+        }
+        [Fact]
+        public async Task GetUser_ReturnsNotFound_WhenUserDoesNotExist()
+        {
+            // Arrange
+            var nonExistingUserId = 999; // ID of a non-existing user
+
+            using (var context = new EventPlannerContext(_options))
+            {
+                // No user is added to the database
+                var controller = new UserController(context);
+
+                // Act
+                var result = await controller.GetUser(nonExistingUserId);
+
+                // Assert
+                Assert.IsType<NotFoundResult>(result.Result);
+            }
+        }
     }
 }
