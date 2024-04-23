@@ -6,32 +6,22 @@ namespace EventPlannerWeb.Data
 {
     using DAL.Annotation;
     using EventPlannerWeb.Models;
+    using Library_kursova.Entities;
+    using Microsoft.AspNetCore.Identity;
+    using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using System.Collections.Generic;
 
-    public class EventPlannerContext : DbContext
+    public class EventPlannerContext : IdentityDbContext<User, AppRole, int,
+        IdentityUserClaim<int>, AppUserRole, IdentityUserLogin<int>,
+        IdentityRoleClaim<int>, IdentityUserToken<int>>
     {
-        //private readonly IConfiguration? _configuration;
-
-        //public EventPlannerContext(IConfiguration configuration)
-        //{
-        //    _configuration = configuration;
-        //}
 
         public EventPlannerContext(DbContextOptions<EventPlannerContext> options)
             : base(options)
         {
-            //this.Database.Migrate();
         }
-
-        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        //{
-        //    if (!optionsBuilder.IsConfigured)
-        //    {
-        //        optionsBuilder.UseNpgsql(_configuration.GetConnectionString("EventPlannerDBCon"));
-        //    }
-        //}
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -50,6 +40,8 @@ namespace EventPlannerWeb.Data
             {
                 annotation.Annotate();
             }
+            base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<AppRole>().HasMany(u => u.UserRoles).WithOne(u => u.Role).HasForeignKey(u => u.RoleId).IsRequired();
         }
 
         public DbSet<User> User { get; set; }

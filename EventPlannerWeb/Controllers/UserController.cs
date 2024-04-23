@@ -19,7 +19,7 @@ namespace EventPlannerWeb.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> GetUser(int id)
         {
-            var user = await _context.User.FirstOrDefaultAsync(u => u.UserId == id);
+            var user = await _context.User.FirstOrDefaultAsync(u => u.Id == id);
 
             if (user == null)
             {
@@ -63,7 +63,7 @@ namespace EventPlannerWeb.Controllers
 
         public async Task<ActionResult> UpdateUser(User user)
         {
-            if (user.UserId == default || !UserExists(user.UserId))
+            if (user.Id == default || !UserExists(user.Id))
                 return NotFound();
 
             if (!ModelState.IsValid)
@@ -76,7 +76,7 @@ namespace EventPlannerWeb.Controllers
 
         private bool UserExists(int id)
         {
-            return _context.User.Any(e => e.UserId == id);
+            return _context.User.Any(e => e.Id == id);
         }
 
         public IActionResult Index()

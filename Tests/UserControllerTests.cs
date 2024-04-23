@@ -33,7 +33,7 @@ namespace Tests
             var controller = new UserController(mockContext);
 
             // Act
-            var user = new User { UserId = 1, Name = "Test User" };
+            var user = new User { Id = 1, Name = "Test User" };
             var result = await controller.UpdateUser(user);
 
             // Assert
@@ -65,7 +65,7 @@ namespace Tests
             using (var context = new EventPlannerContext(_options))
             {
                 // Initialize database with test data
-                context.User.Add(new User { UserId = 1, Name = "Test user", Surname = "Test", Email = "test@example.com", Gender = Gender.Male, Password = "123567890", PhoneNumber="0675629289" });
+                context.User.Add(new User { Id = 1, Name = "Test user", Surname = "Test", Email = "test@example.com", Gender = Gender.Male/*, Password = "123567890"*/, PhoneNumber="0675629289" });
                 await context.SaveChangesAsync();
             }
 
@@ -88,7 +88,7 @@ namespace Tests
             using (var context = new EventPlannerContext(_options))
             {
                 // Initialize database with test data
-                var userData = new User { UserId = 5, Name = "Test user", Surname = "Test", Email = "test@example.com", Gender = Gender.Male, Password = "123567890", PhoneNumber = "0675629289" };
+                var userData = new User { Id = 5, Name = "Test user", Surname = "Test", Email = "test@example.com", Gender = Gender.Male, /*Password = "123567890",*/ PhoneNumber = "0675629289" };
                 context.User.Add(userData);
                 await context.SaveChangesAsync();
             }
