@@ -100,7 +100,7 @@
             };
 
             try {
-                const response = await fetch('/api/Login', {
+                const response = await fetch('/api/account/login', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -111,6 +111,7 @@
                 if (response.ok) {
                     // Обробка успішної відповіді
                     alert('Успішний вхід!');
+                    window.location.href = '/api/recipe';
                 } else {
                     // Обробка помилки
                     alert('Помилка входу');

@@ -100,9 +100,8 @@
 
             <label for="gender">Стать:</label>
             <select id="gender">
-                <option value="Male">Чоловік</option>
-                <option value="Female">Жінка</option>
-                <option value="Other">Інше</option>
+                <option value=0>Чоловік</option>
+                <option value=1>Жінка</option>
             </select>
 
             <label for="password">Пароль:</label>
@@ -111,7 +110,7 @@
             <button type="button" onclick="register()">Зареєструватися</button>
         </form>
 
-        <a href="user/login" class="login-link">Увійти</a>
+        <a href="/api/user/login" class="login-link">Увійти</a>
     </div>
 
     <script>
@@ -128,12 +127,12 @@
                 Surname: surname,
                 Email: email,
                 PhoneNumber: phone,
-                Gender: gender,
+                Gender: 0,
                 Password: password
             };
 
             try {
-                const response = await fetch('/api/User', {
+                const response = await fetch('/api/account/register', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -144,7 +143,9 @@
                 if (response.ok) {
                     // Обробка успішної відповіді
                     alert('Реєстрація успішна!');
+                    window.location.href = '/api/recipe';
                 } else {
+                    console.log(response)
                     // Обробка помилки
                     alert('Помилка реєстрації');
                 }
