@@ -57,6 +57,7 @@ namespace Library_kursova.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<UserDTO>> Login(LoginDTO loginDTO)
         {
+            ViewBag.ShowHeader = false;
             var user = await userManager.Users.FirstOrDefaultAsync(u => u.Email == loginDTO.Email);
 
             if (user == null) return Unauthorized("Invalid email");

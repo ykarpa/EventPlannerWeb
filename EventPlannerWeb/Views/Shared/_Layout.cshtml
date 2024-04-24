@@ -85,14 +85,16 @@
         }
 
     </style>
-    <div class="header">
-        <div class="left-part">
+    @if (ViewBag.ShowHeader != false)
+    {
+        <div class="header">
+            <div class="left-part">
             <img class="left-part-img" src="C:\Users\Vitalik\Downloads\planner.png"/>
             <div class="left-part-text">EventPlanner</div>
         </div>
         <div class="right-part">
         <div class="link-about-us">
-            <a href="/api/recipe" class="link-style">Рецепти</a>
+            <a  href="/api/recipe" class="link-style">Рецепти</a>
         </div>
         <div class="link-about-us">
                 <a href="/api/guest" class="link-style">Гості</a>
@@ -106,7 +108,7 @@
             <button onclick="window.location.href='user/login'" class="button-add-recipe">Логін</button>
         </div>
     </div>
-
+    }
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
