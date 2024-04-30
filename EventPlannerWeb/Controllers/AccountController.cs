@@ -6,6 +6,10 @@ using EventPlannerWeb.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
+using System.Linq;
+
+
 
 namespace Library_kursova.Controllers
 {
@@ -57,14 +61,15 @@ namespace Library_kursova.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<UserDTO>> Login(LoginDTO loginDTO)
         {
-            ViewBag.ShowHeader = false;
-            var user = await userManager.Users.FirstOrDefaultAsync(u => u.Email == loginDTO.Email);
+            var user = await userManager.FindByEmailAsync(loginDTO.Email);
 
-            if (user == null) return Unauthorized("Invalid email");
+            if (user == null)
+                return Unauthorized("Invalid email");
 
             var result = await userManager.CheckPasswordAsync(user, loginDTO.Password);
 
-            if (!result) return Unauthorized("Invalid password");
+            if (!result)
+                return Unauthorized("Invalid password");
 
             return new UserDTO
             {
@@ -77,9 +82,16 @@ namespace Library_kursova.Controllers
             };
         }
 
+
         private async Task<bool> UserExists(string email)
         {
             return await userManager.Users.AnyAsync(u => u.Email == email.ToLower());
         }
+
+
+
+
+
+
     }
 }

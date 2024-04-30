@@ -47,12 +47,12 @@ namespace Tests
         [Fact]
         public async Task GuestList_ReturnsListOfGuests()
         {
-                    // Arrange
+            // Arrange
             var guests = new List<Guest>
-            {
-                new Guest { GuestId = 1, Name = "Guest 1", Gender = Gender.Male },
-                new Guest { GuestId = 2, Name = "Guest 2", Gender = Gender.Female }
-            };
+    {
+        new Guest { GuestId = 1, Name = "Guest 1", Gender = Gender.Male },
+        new Guest { GuestId = 2, Name = "Guest 2", Gender = Gender.Female }
+    };
 
             var mockDbSet = new Mock<DbSet<Guest>>();
             mockDbSet.As<IAsyncEnumerable<Guest>>()
@@ -69,7 +69,7 @@ namespace Tests
                 .Options;
 
             var mockContext = new Mock<EventPlannerContext>(options);
-            mockContext.Setup(c => c.Guest).Returns(mockDbSet.Object); // Corrected this line
+            mockContext.Setup(c => c.Guest).Returns(mockDbSet.Object);
 
             var controller = new GuestController(mockContext.Object);
 
@@ -77,10 +77,11 @@ namespace Tests
             var result = await controller.GuestList();
 
             // Assert
-            var actionResult = Assert.IsType<ActionResult<IEnumerable<Guest>>>(result);
-            var model = Assert.IsAssignableFrom<IEnumerable<Guest>>(actionResult.Value);
+            var viewResult = Assert.IsType<ViewResult>(result);
+            var model = Assert.IsAssignableFrom<IEnumerable<Guest>>(viewResult.ViewData.Model);
             Assert.Equal(2, model.Count());
         }
+
 
 
 

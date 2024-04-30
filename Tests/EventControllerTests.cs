@@ -139,11 +139,11 @@ namespace Tests
         {
             // Arrange
             var expectedEvents = new List<Event>
-            {
-                new Event { EventId = 11, Name = "Event 11" },
-                new Event { EventId = 12, Name = "Event 12" },
-                new Event { EventId = 13, Name = "Event 13" }
-            };
+    {
+        new Event { EventId = 11, Name = "Event 11" },
+        new Event { EventId = 12, Name = "Event 12" },
+        new Event { EventId = 13, Name = "Event 13" }
+    };
 
             using (var context = new EventPlannerContext(_options))
             {
@@ -160,14 +160,14 @@ namespace Tests
                 var result = await controller.EventList();
 
                 // Assert
-                var actionResult = Assert.IsType<ActionResult<IEnumerable<Event>>>(result);
-                var viewResult = Assert.IsAssignableFrom<ViewResult>(actionResult.Result);
-                var model = Assert.IsAssignableFrom<IEnumerable<Event>>(viewResult.ViewData.Model);
+                var viewResult = Assert.IsType<ViewResult>(result);
+                var model = Assert.IsAssignableFrom<IEnumerable<EventDTO>>(viewResult.ViewData.Model);
 
                 // Assert that the model contains the expected events
-                Assert.Equal(expectedEvents.Select(e => e.EventId), model.Select(e => e.EventId));
+                Assert.Equal(expectedEvents.Select(e => e.EventId), model.Select(e => e.Event.EventId));
             }
         }
+
         [Fact]
         public async Task EventPage_ReturnsNotFound_WhenEventNotFound()
         {
