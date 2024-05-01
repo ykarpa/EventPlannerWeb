@@ -119,46 +119,46 @@
 
     <script>
         async function updateRecipe() {
-const recipeId = document.getElementById("recipeId").value;
-    const name = document.getElementById("name").value;
-    const price = document.getElementById("price").value;
-    const calories = document.getElementById("calories").value;
-    const cookingTime = document.getElementById("cookingTime").value;
-    const description = document.getElementById("description").value;
+            const recipeId = document.getElementById("recipeId").value;
+            const name = document.getElementById("name").value;
+            const price = document.getElementById("price").value;
+            const calories = document.getElementById("calories").value;
+            const cookingTime = document.getElementById("cookingTime").value;
+            const description = document.getElementById("description").value;
 
-    const data = {
-        Recipe: {
-            RecipeId: 4,
-            Name: name,
-            Price: price,
-            Calories: calories,
-            CookingTime: cookingTime,
-            Description: description
-        },
-        IngredientsAmount: [],
-        Ingredients: []
-    };
+            const data = {
+                Recipe: {
+                    RecipeId: recipeId,
+                    Name: name,
+                    Price: price,
+                    Calories: calories,
+                    CookingTime: cookingTime,
+                    Description: description
+                },
+                IngredientsAmount: [30, 20],
+                Ingredients: ["Морква", "Огірок"]
+            };
 
-    try {
-        const response = await fetch('/api/Recipe', {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        });
+            try {
+                const response = await fetch('/api/Recipe', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
 
-        if (response.ok) {
-            // Обробка успішної відповіді
-            alert('Рецепт успішно оновлено!');
-        } else {
-            // Обробка помилки
-            alert('Помилка при оновленні рецепту');
-        }
-    } catch (error) {
-        console.error('Виникла помилка:', error);
-        alert('Виникла помилка при відправці запиту');
-    }
+                if (response.ok) {
+                    // Обробка успішної відповіді
+                    alert('Рецепт успішно оновлено!');
+                } else {
+                    // Обробка помилки
+                    alert('Помилка при оновленні рецепту');
+                }
+            } catch (error) {
+                console.error('Виникла помилка:', error);
+                alert('Виникла помилка при відправці запиту');
+            }
         }
     </script>
 </body>

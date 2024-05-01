@@ -100,8 +100,8 @@
                     <input type="number" id="calories" name="Calories" class="form-control" required>
                 </div>
                 <div class="form-group">
-                    <label for="cooking_time">Час приготування:</label>
-                    <input type="number" id="cooking_time" name="CookingTime" class="form-control" required>
+                    <label for="cookingTime">Час приготування:</label>
+                    <input type="number" id="cookingTime" name="CookingTime" class="form-control" required>
                 </div>
                 <div class="form-group">
                     <label for="price">Вартість:</label>
@@ -121,11 +121,54 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <button type="submit" value="Save" class="btn btn-primary">Додати</button>
+                    <button type="button" value="Save" class="btn btn-primary" onclick="addRecipe()">Додати</button>
                 </div>
             </form>
             <a href="@Url.Action("RecipeList", "Recipe")" class="back-to-list">Назад до списку</a>
         </div>
     </div>
+    <script>
+        async function addRecipe() {
+            //const recipeId = document.getElementById("recipeId").value;
+            const name = document.getElementById("name").value;
+            const price = document.getElementById("price").value;
+            const calories = document.getElementById("calories").value;
+            const cookingTime = document.getElementById("cookingTime").value;
+            const description = document.getElementById("description").value;
+
+            const data = {
+                Recipe: {
+                    Name: name,
+                    Price: price,
+                    Calories: calories,
+                    CookingTime: cookingTime,
+                    Description: description
+                },
+                IngredientsAmount: [30],
+                Ingredients: ["Морква"]
+            };
+
+            try {
+                const response = await fetch('/api/Recipe', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    // Обробка успішної відповіді
+                    alert('Рецепт успішно оновлено!');
+                } else {
+                    // Обробка помилки
+                    alert('Помилка при оновленні рецепту');
+                }
+            } catch (error) {
+                console.error('Виникла помилка:', error);
+                alert('Виникла помилка при відправці запиту');
+            }
+        }
+    </script>
 </body>
 </html>
