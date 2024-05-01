@@ -101,7 +101,7 @@
                 </div>
                 <div class="form-group">
                     <label for="recipes">Страви:</label>
-                    <select id="recipes" name="selectedRecipes" multiple class="form-control" required>
+                    <select id="recipes" name="selectedRecipes" multiple class="form-control">
                         @foreach (var recipe in ViewBag.Recipes)
                         {
                             <option value="@recipe.Value">@recipe.Text</option>
@@ -110,7 +110,7 @@
                 </div>
                 <div class="form-group">
                     <label for="guests">Гості:</label>
-                    <select id="guests" name="selectedGuests" multiple class="form-control" required>
+                    <select id="guests" name="selectedGuests" multiple class="form-control">
                         @foreach (var guest in ViewBag.Guests)
                         {
                             <option value="@guest.Value">@guest.Text</option>
@@ -118,11 +118,49 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <button type="submit" class="btn btn-primary">Додати</button>
+                    <button type="submit" class="btn btn-primary" onclick="addEvent()">Додати</button>
                 </div>
             </form>
             <a href="@Url.Action("EventList", "Event")" class="back-to-list">Назад до списку</a>
         </div>
     </div>
+    <script>
+        async function addEvent() {
+            //const userId = document.getElementById("userId").value;
+            const name = document.getElementById("name").value;
+            const price = document.getElementById("price").value;
+
+            const data = {
+                Event: {
+                    Name: name,
+                    Price: price,
+                    UserId: 1
+                },
+                Guests: [2, 3],
+                Recipes: [2]
+            };
+
+            try {
+                const response = await fetch('/api/Event', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    // Обробка успішної відповіді
+                    alert('Інформацію про гостя успішно оновлено!');
+                } else {
+                    // Обробка помилки
+                    alert('Помилка при оновленні інформації про гостя');
+                }
+            } catch (error) {
+            //     console.error('Виникла помилка:', error);
+            //     alert('Виникла помилка при відправці запиту');
+            }
+        }
+    </script>
 </body>
 </html>
