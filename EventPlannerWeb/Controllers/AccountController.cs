@@ -71,6 +71,8 @@ namespace Library_kursova.Controllers
             if (!result)
                 return Unauthorized("Invalid password");
 
+            ViewBag.ShowLoginButton = false;
+
             return new UserDTO
             {
                 Surname = user.Surname,
@@ -81,6 +83,7 @@ namespace Library_kursova.Controllers
                 Token = tokenService.CreateToken(user)
             };
         }
+
 
 
         private async Task<bool> UserExists(string email)

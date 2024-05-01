@@ -54,15 +54,29 @@ var app = builder.Build();
 //app.UseStaticFiles();
 
 //app.UseRouting();
+app.UseHttpsRedirection();
 
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+app.UseRouting();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllerRoute(
+        name: "default",
+        pattern: "{controller=Home}/{action=Index}/{id?}");
+
+    endpoints.MapGet("/", context =>
+    {
+        context.Response.Redirect("/api/user/login");
+        return Task.CompletedTask;
+    });
+});
 
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
-app.UseAuthorization();
 
 app.MapControllers();
 
