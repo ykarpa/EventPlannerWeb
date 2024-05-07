@@ -121,10 +121,31 @@
             cursor: pointer;
             border-radius: 5px;
         }
+
+        .field-naming {
+            display: flex;
+            justify-content: space-between;
+            align-items: stretch;
+            margin-bottom: 5px;
+            font-weight: bold;
+            padding: 0px; /* Add padding for better spacing */
+        }
+
+            .field-naming div {
+                flex: 1;
+                text-align: start;
+            }
+
+                .field-naming div:first-child {
+                    padding-left: 1px; /* Adjust padding for the first child */
+                }
+
+
     </style>
 </head>
 <body>
     <div class="recipe-list-page">
+        
         <div class="recipe-list-header">Список рецептів</div>
         <div class="recipe-list-header-part">
             <div class="search-part">
@@ -132,6 +153,12 @@
                 <button class="button-search" onclick="filterAndSortRecipes()">Пошук</button>
             </div>
             <button class="add-recipe">Додати рецепт</button>
+        </div>
+        <div class="field-naming">
+            <div>Назва:</div>
+            <div>Час приготування:</div>
+            <div>Ціна:</div>
+            <div>Калорії:</div>
         </div>
         <div class="recipe-list" id="recipe-list-container">
         @foreach (var recipe in Model)
