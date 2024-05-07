@@ -49,12 +49,12 @@
 
         .button-add-recipe {
             width: 120px;
-            height: 55px;
+            height: 45px;
             background-color: white;
-            font-size: 20px;
+            font-size: 17px;
             color: #8B92D0;
             border-radius: 10px;
-            margin-top: 20px;
+            margin-top: 25px;
             cursor: pointer;
         }
 
@@ -105,10 +105,9 @@
                 <div class="link-about-us">
                     <a href="YourPage.cshtml" class="link-style">Налаштування</a>
                 </div>
-                @if (ViewBag.ShowLoginButton)
-                {
+
                     <button onclick="window.location.href='user/login'" class="button-add-recipe">Логін</button>
-                }
+                
             </div>
         </div>
     }

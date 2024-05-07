@@ -9,7 +9,6 @@
     <title>@ViewData["Title"]</title>
     <style>
         body {
-            font-family: 'Arial', sans-serif;
             margin-top: 150px;
             padding: 0;
             background-color: #f7f7f7;
@@ -59,7 +58,7 @@
         }
 
         .btn-primary {
-            background-color: #3498db;
+            background-color: #8B92D0;
             color: #fff;
             border: none;
             border-radius: 4px;
@@ -68,28 +67,28 @@
         }
 
             .btn-primary:hover {
-                background-color: #2980b9;
+                background-color: #8B92D0;
             }
 
         .back-to-list {
             display: inline-block;
             margin-top: 20px;
             padding: 10px 15px;
-            background-color: #3498db;
+            background-color: #8B92D0;
             color: #fff;
             border-radius: 4px;
             text-decoration: none;
         }
 
             .back-to-list:hover {
-                background-color: #2980b9;
+                background-color: #8B92D0;
             }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="card">
-            <h1>Додати подію</h1>
+            <h1>Додати гостя</h1>
             <form method="post" action="@Url.Action("AddGuest", "Guest")" enctype="multipart/form-data">
                 <div class="form-group">
                     <label for="name">Ім'я:</label>
