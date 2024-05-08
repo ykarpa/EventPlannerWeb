@@ -89,7 +89,7 @@
 
         .recipe-info-text {
             cursor: pointer;
-            padding-left: 20px;
+            padding-left: 60px;
             padding-top: 15px;
             font-size: 20px;
         }
@@ -124,23 +124,29 @@
 
         .field-naming {
             display: flex;
-            justify-content: space-between;
-            align-items: stretch;
+            justify-content: flex-start;
+            margin-top: 15px;
             margin-bottom: 5px;
             font-weight: bold;
+            font-size: 20px;
             padding: 0px; /* Add padding for better spacing */
         }
 
-            .field-naming div {
-                flex: 1;
-                text-align: start;
-            }
+        .name {
+            margin-left: 50px;
+        }
 
-                .field-naming div:first-child {
-                    padding-left: 1px; /* Adjust padding for the first child */
-                }
+        .time {
+            margin-left: 110px;
+        }
 
+        .price {
+            margin-left: 80px;
+        }
 
+        .calories {
+            margin-left: 85px;
+        }
     </style>
 </head>
 <body>
@@ -155,10 +161,10 @@
             <button class="add-recipe">Додати рецепт</button>
         </div>
         <div class="field-naming">
-            <div>Назва:</div>
-            <div>Час приготування:</div>
-            <div>Ціна:</div>
-            <div>Калорії:</div>
+            <div class="name">Назва</div>
+            <div class="time">Час</div>
+            <div class="price">Ціна</div>
+            <div class="calories">Калорії</div>
         </div>
         <div class="recipe-list" id="recipe-list-container">
         @foreach (var recipe in Model)

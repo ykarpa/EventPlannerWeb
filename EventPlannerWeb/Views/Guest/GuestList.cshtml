@@ -101,7 +101,7 @@
         .guest-gender {
             margin-right: 20px;
             cursor: pointer;
-            padding-left: 20px;
+            padding-left: 10px;
             padding-top: 15px;
             font-size: 20px;
         }
@@ -133,6 +133,25 @@
             cursor: pointer;
             border-radius: 5px;
         }
+
+        .field-naming {
+            display: flex;
+            justify-content: flex-start;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 20px;
+            padding: 0px; /* Add padding for better spacing */
+        }
+
+        .name {
+            margin-left: 70px;
+        }
+
+        .sex {
+            margin-left: 320px;
+        }
+
     </style>
     <div class="guest-list-page">
         <div class="guest-list-header">Список гостей</div>
@@ -142,6 +161,10 @@
                 <button class="button-search" onclick="filterAndSortGuests()">Пошук</button>
             </div>
             <button class="add-guest">Додати гостя</button>
+        </div>
+        <div class="field-naming">
+            <div class="name">Ім'я</div>
+            <div class="sex">Стать</div>
         </div>
         <div class="guest-list" id="guest-list-container">
             @foreach (var guest in Model)

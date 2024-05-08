@@ -91,7 +91,7 @@
 
         .event-info-text {
             cursor: pointer;
-            padding-left: 20px;
+            padding-left: 130px;
             padding-top: 15px;
             font-size: 20px;
         }
@@ -131,6 +131,28 @@
             cursor: pointer;
             border-radius: 5px;
         }
+
+        .field-naming {
+            display: flex;
+            justify-content: flex-start;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 20px;
+            padding: 0px; /* Add padding for better spacing */
+        }
+
+        .name {
+            margin-left: 37px;
+        }
+
+        .price {
+            margin-left: 170px;
+        }
+
+        .date {
+            margin-left: 200px;
+        }
     </style>
     <div class="event-list-page">
     <div class="event-list-header">Список подій</div>
@@ -141,12 +163,17 @@
         </div>
         <button class="add-event">Додати подію</button>
     </div>
+        <div class="field-naming">
+            <div class="name">Назва</div>
+            <div class="price">Ціна</div>
+            <div class="date">Дата</div>
+        </div>
     <div class="event-list" id="event-list-container">
             @foreach (var event_ in Model)
             {
                 <div class="event-list-element" >
                     <div class="event-info" data-id="@event_.Event.EventId" onclick="openEventDetails(this)">
-                        <div class="event-name">Подія: @event_.Event.Name</div>
+                        <div class="event-name">@event_.Event.Name</div>
                         <div class="event-info-text">@event_.Event.Price грн</div>
                     </div>
                     <div class="event-date">@event_.Event.CreatedDate</div>
