@@ -7,7 +7,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "dotnetRunMessages": true,
-      "applicationUrl": "http://localhost:5192"
+      "applicationUrl": "http://eventplannerweb-test.us-east-1.elasticbeanstalk.com/"
     },
     "IIS Express": {
       "commandName": "IISExpress",

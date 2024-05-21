@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EventPlannerWeb.Migrations
 {
     [DbContext(typeof(EventPlannerContext))]
-    [Migration("20240424081128_initial")]
-    partial class initial
+    [Migration("20240515081823_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

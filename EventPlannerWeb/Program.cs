@@ -17,7 +17,7 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContextFactory<EventPlannerContext>(opt =>
 {
-    opt.UseNpgsql(builder.Configuration.GetConnectionString("EventPlannerDBCon"));
+    opt.UseNpgsql("Host=database-1.ct80k04gi1rw.eu-north-1.rds.amazonaws.com;Port=5432;Username=postgres;Password=vitalik31068;Database=EventPlanner");
 });
 
 builder.Services.AddScoped<ITokenService, TokenService>();
@@ -46,14 +46,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-//if (!app.Environment.IsDevelopment())
-//{
-//    app.UseExceptionHandler("/Home/Error");
-//}
-//app.UseStaticFiles();
-
-//app.UseRouting();
 app.UseHttpsRedirection();
 
 app.UseRouting();
@@ -63,20 +55,14 @@ app.UseAuthorization();
 
 app.UseEndpoints(endpoints =>
 {
-    endpoints.MapControllerRoute(
-        name: "default",
-        pattern: "{controller=Home}/{action=Index}/{id?}");
-
     endpoints.MapGet("/", context =>
     {
-        context.Response.Redirect("/api/user/login");
+        context.Response.Redirect("/api/guest");
         return Task.CompletedTask;
     });
 });
 
-app.UseHttpsRedirection();
-
-app.UseAuthentication();
+//app.UseAuthentication();
 
 app.MapControllers();
 
