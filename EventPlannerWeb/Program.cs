@@ -17,7 +17,7 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContextFactory<EventPlannerContext>(opt =>
 {
-    opt.UseNpgsql("Host=database-1.ct80k04gi1rw.eu-north-1.rds.amazonaws.com;Port=5432;Username=postgres;Password=vitalik31068;Database=EventPlanner");
+    opt.UseNpgsql("Host=database-1.c5cwsas8ab06.us-east-1.rds.amazonaws.com;Port=5432;Username=postgres;Password=vitalik31068;Database=EventPlanner");
 });
 
 builder.Services.AddScoped<ITokenService, TokenService>();
